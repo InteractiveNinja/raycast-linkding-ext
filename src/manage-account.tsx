@@ -8,6 +8,8 @@ export function getLinkdingAccounts() {
   return LocalStorage.getItem<string>(LINKDING_ACCOUNTS).then((unparsedAccounts) => {
     if (unparsedAccounts) {
       return JSON.parse(unparsedAccounts) as LinkdingMap;
+    } else {
+      return {};
     }
   });
 }
