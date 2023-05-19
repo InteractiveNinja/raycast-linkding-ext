@@ -1,55 +1,76 @@
-import { Action, ActionPanel, getPreferenceValues, List, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import axios, { CancelTokenSource } from "axios";
 import { Agent } from "https";
-import { LinkdingBookmark, LinkdingResponse, LinkdingServer } from "./types/linkding-types";
+import { LinkdingBookmark, LinkdingForm, LinkdingMap, LinkdingResponse } from "./types/linkding-types";
+import { getLinkdingAccounts } from "./manage-account";
 
 export default function searchLinkding() {
-  const preferences = getPreferenceValues<LinkdingServer>();
-  const linkdingAccount: LinkdingServer = {
-    serverUrl: preferences.serverUrl.endsWith("/") ? preferences.serverUrl.slice(0, -1) : preferences.serverUrl,
-    apiKey: preferences.apiKey,
-    ignoreSSL: preferences.ignoreSSL,
-  };
-
+  const [getSelectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | null>(null);
+  const [getLinkdingMap, setLinkdingMap] = useState<LinkdingMap>({});
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState<LinkdingBookmark[]>([]);
   const cancelRef = useRef<CancelTokenSource | null>(null);
 
-  function fetchBookmarks(searchText: string) {
-    cancelRef.current?.cancel();
-    cancelRef.current = axios.CancelToken.source();
-    setLoading(true);
-    axios<LinkdingResponse>(`${linkdingAccount.serverUrl}/api/bookmarks?` + new URLSearchParams({ q: searchText }), {
-      cancelToken: cancelRef.current?.token,
-      responseType: "json",
-      httpsAgent: new Agent({ rejectUnauthorized: !linkdingAccount.ignoreSSL }),
-      headers: { Authorization: `Token ${linkdingAccount.apiKey}` },
-    })
-      .then((data) => {
-        setData(data.data.results);
+  useEffect(() => {
+    getLinkdingAccounts().then((linkdingMap) => {
+      if (linkdingMap) {
+        setLinkdingMap(linkdingMap);
+      }
+    });
+  }, [setLinkdingMap]);
+
+  function fetchBookmarks(searchText: string, linkdingAccount: LinkdingForm | null) {
+    if (linkdingAccount) {
+      cancelRef.current?.cancel();
+      cancelRef.current = axios.CancelToken.source();
+      setLoading(true);
+      axios<LinkdingResponse>(`${linkdingAccount.serverUrl}/api/bookmarks?` + new URLSearchParams({ q: searchText }), {
+        cancelToken: cancelRef.current?.token,
+        responseType: "json",
+        httpsAgent: new Agent({ rejectUnauthorized: !linkdingAccount.ignoreSSL }),
+        headers: { Authorization: `Token ${linkdingAccount.apiKey}` },
       })
-      .catch((err) => {
-        showToast({
-          style: Toast.Style.Failure,
-          title: "Something went wrong",
-          message: err.message,
+        .then((data) => {
+          setData(data.data.results);
+        })
+        .catch((err) => {
+          showToast({
+            style: Toast.Style.Failure,
+            title: "Something went wrong",
+            message: err.message,
+          });
+        })
+        .finally(() => {
+          setLoading(false);
         });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    }
   }
 
-  useEffect(() => {
-    fetchBookmarks("");
-    return () => {
-      cancelRef.current?.cancel();
-    };
-  }, []);
+  function LinkdingAccountDropdown() {
+    function setSelectedAccount(name: string): void {
+      const linkdingAccount = { name, ...getLinkdingMap[name] };
+      setSelectedLinkdingAccount(linkdingAccount);
+      fetchBookmarks("", linkdingAccount);
+    }
+
+    return (
+      <List.Dropdown tooltip="User Account" onChange={(name) => setSelectedAccount(name)} throttle storeValue>
+        {Object.keys(getLinkdingMap).map((name) => (
+          <List.Dropdown.Item key={name} title={name} value={name} />
+        ))}
+      </List.Dropdown>
+    );
+  }
 
   return (
-    <List isLoading={isLoading} onSearchTextChange={fetchBookmarks} searchBarPlaceholder="Search bookmarks..." throttle>
+    <List
+      isLoading={isLoading}
+      onSearchTextChange={(searchText) => fetchBookmarks(searchText, getSelectedLinkdingAccount)}
+      searchBarPlaceholder="Search bookmarks..."
+      searchBarAccessory={<LinkdingAccountDropdown />}
+      throttle
+    >
       <List.Section title="Results" subtitle={data?.length + ""}>
         {data?.map((linkdingBookmark) => (
           <SearchListItem key={linkdingBookmark.id} linkdingBookmark={linkdingBookmark} />
