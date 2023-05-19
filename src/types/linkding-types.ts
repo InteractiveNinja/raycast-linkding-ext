@@ -17,3 +17,9 @@ export interface LinkdingServer {
   apiKey: string;
   ignoreSSL: boolean;
 }
+
+export interface LinkdingForm extends LinkdingServer {
+  name: string;
+}
+
+export type LinkdingMap = { [name: string]: LinkdingServer };

@@ -15,6 +15,12 @@
       "title": "Search Linkding",
       "description": "Searches through Linkding Bookmarks",
       "mode": "view"
+    },
+    {
+      "name": "manage-account",
+      "title": "Manage Linkdin Accounts",
+      "description": "Mange your Linkding Accounts and Servers",
+      "mode": "view"
     }
   ],
   "preferences": [
