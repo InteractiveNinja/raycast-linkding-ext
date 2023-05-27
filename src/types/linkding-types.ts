@@ -22,4 +22,4 @@ export interface LinkdingForm extends LinkdingServer {
   name: string;
 }
 
-export type LinkdingMap = { [name: string]: LinkdingServer };
+export type LinkdingAccountMap = { [name: string]: LinkdingServer };

@@ -1,44 +1,33 @@
-import { Action, ActionPanel, Form, List, LocalStorage, useNavigation } from "@raycast/api";
-import { LinkdingForm, LinkdingMap } from "./types/linkding-types";
+import { Action, ActionPanel, Form, List, useNavigation } from "@raycast/api";
+import { LinkdingAccountMap, LinkdingForm } from "./types/linkding-types";
 import React, { useEffect, useState } from "react";
-
-export const LINKDING_ACCOUNTS = "linkding_accounts";
-
-export function getLinkdingAccounts() {
-  return LocalStorage.getItem<string>(LINKDING_ACCOUNTS).then((unparsedAccounts) => {
-    if (unparsedAccounts) {
-      return JSON.parse(unparsedAccounts) as LinkdingMap;
-    } else {
-      return {};
-    }
-  });
-}
+import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./service/user-account-service";
 
 export default function manageAccounts() {
-  const [getLinkdingMap, setLinkdingMap] = useState<LinkdingMap>({});
+  const [getLinkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const { push } = useNavigation();
   useEffect(() => {
-    getLinkdingAccounts().then((linkdingMap) => {
+    getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
-        setLinkdingMap(linkdingMap);
+        setLinkdingAccountMap(linkdingMap);
       }
     });
-  }, [setLinkdingMap]);
+  }, [setLinkdingAccountMap]);
 
   function deleteAccount(name: string): void {
-    const { [name]: removed, ...filteredMapEntries } = getLinkdingMap;
-    updateLinkdingMap(filteredMapEntries);
+    const { [name]: removed, ...filteredMapEntries } = getLinkdingAccountMap;
+    updateLinkdingAccountMap(filteredMapEntries);
   }
 
   function createUpdateAccount(account: LinkdingForm): void {
     const { name, ...linkdingServer } = account;
-    const accounts = { ...getLinkdingMap, [name]: { ...linkdingServer } };
-    updateLinkdingMap(accounts);
+    const accounts = { ...getLinkdingAccountMap, [name]: { ...linkdingServer } };
+    updateLinkdingAccountMap(accounts);
   }
 
-  function updateLinkdingMap(linkdingMap: LinkdingMap) {
-    setLinkdingMap(linkdingMap);
-    LocalStorage.setItem(LINKDING_ACCOUNTS, JSON.stringify(linkdingMap));
+  function updateLinkdingAccountMap(linkdingMap: LinkdingAccountMap) {
+    setLinkdingAccountMap(linkdingMap);
+    setPersistedLinkdingAccounts(linkdingMap);
   }
 
   function showCreateEditAccount(formValue?: LinkdingForm) {
@@ -54,16 +43,16 @@ export default function manageAccounts() {
         </ActionPanel>
       }
     >
-      {Object.entries(getLinkdingMap).map(([name, linkdingServer]) => {
+      {Object.entries(getLinkdingAccountMap).map(([name, linkdingAccount]) => {
         return (
           <List.Item
             key={name}
             title={name}
-            subtitle={linkdingServer.serverUrl}
+            subtitle={linkdingAccount.serverUrl}
             actions={
               <ActionPanel title="Manage Accounts">
                 <Action title="Create New Account" onAction={() => showCreateEditAccount()} />
-                <Action title="Edit Account" onAction={() => showCreateEditAccount({ name, ...linkdingServer })} />
+                <Action title="Edit Account" onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
                 <Action title="Delete Account" onAction={() => deleteAccount(name)} />
               </ActionPanel>
             }

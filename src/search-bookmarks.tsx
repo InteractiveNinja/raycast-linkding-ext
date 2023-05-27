@@ -2,23 +2,24 @@ import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import axios, { CancelTokenSource } from "axios";
 import { Agent } from "https";
-import { LinkdingBookmark, LinkdingForm, LinkdingMap, LinkdingResponse } from "./types/linkding-types";
-import { getLinkdingAccounts } from "./manage-account";
+import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm, LinkdingResponse } from "./types/linkding-types";
+
+import { getPersistedLinkdingAccounts } from "./service/user-account-service";
 
 export default function searchLinkding() {
   const [getSelectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | null>(null);
-  const [getLinkdingMap, setLinkdingMap] = useState<LinkdingMap>({});
+  const [getLinkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState<LinkdingBookmark[]>([]);
   const cancelRef = useRef<CancelTokenSource | null>(null);
 
   useEffect(() => {
-    getLinkdingAccounts().then((linkdingMap) => {
+    getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
-        setLinkdingMap(linkdingMap);
+        setLinkdingAccountMap(linkdingMap);
       }
     });
-  }, [setLinkdingMap]);
+  }, [setLinkdingAccountMap]);
 
   function fetchBookmarks(searchText: string, linkdingAccount: LinkdingForm | null) {
     if (linkdingAccount) {
@@ -49,14 +50,14 @@ export default function searchLinkding() {
 
   function LinkdingAccountDropdown() {
     function setSelectedAccount(name: string): void {
-      const linkdingAccount = { name, ...getLinkdingMap[name] };
+      const linkdingAccount = { name, ...getLinkdingAccountMap[name] };
       setSelectedLinkdingAccount(linkdingAccount);
       fetchBookmarks("", linkdingAccount);
     }
 
     return (
       <List.Dropdown tooltip="User Account" onChange={(name) => setSelectedAccount(name)} throttle storeValue>
-        {Object.keys(getLinkdingMap).map((name) => (
+        {Object.keys(getLinkdingAccountMap).map((name) => (
           <List.Dropdown.Item key={name} title={name} value={name} />
         ))}
       </List.Dropdown>
