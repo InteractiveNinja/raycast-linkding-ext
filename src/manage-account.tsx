@@ -43,22 +43,26 @@ export default function manageAccounts() {
         </ActionPanel>
       }
     >
-      {Object.entries(getLinkdingAccountMap).map(([name, linkdingAccount]) => {
-        return (
-          <List.Item
-            key={name}
-            title={name}
-            subtitle={linkdingAccount.serverUrl}
-            actions={
-              <ActionPanel title="Manage Accounts">
-                <Action title="Create New Account" onAction={() => showCreateEditAccount()} />
-                <Action title="Edit Account" onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
-                <Action title="Delete Account" onAction={() => deleteAccount(name)} />
-              </ActionPanel>
-            }
-          />
-        );
-      })}
+      {Object.keys(getLinkdingAccountMap).length == 0 ? (
+        <List.EmptyView title="No Accounts present" description="Create your first Account" />
+      ) : (
+        Object.entries(getLinkdingAccountMap).map(([name, linkdingAccount]) => {
+          return (
+            <List.Item
+              key={name}
+              title={name}
+              subtitle={linkdingAccount.serverUrl}
+              actions={
+                <ActionPanel title="Manage Accounts">
+                  <Action title="Create New Account" onAction={() => showCreateEditAccount()} />
+                  <Action title="Edit Account" onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
+                  <Action title="Delete Account" onAction={() => deleteAccount(name)} />
+                </ActionPanel>
+              }
+            />
+          );
+        })
+      )}
     </List>
   );
 }
