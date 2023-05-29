@@ -7,10 +7,10 @@ import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm, LinkdingResponse } 
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
 
 export default function searchLinkding() {
-  const [getSelectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | null>(null);
-  const [getLinkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
+  const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | null>(null);
+  const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState<LinkdingBookmark[]>([]);
+  const [linkdingBookmarks, setLinkdingBookmarks] = useState<LinkdingBookmark[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function searchLinkding() {
         headers: { Authorization: `Token ${linkdingAccount.apiKey}` },
       })
         .then((data) => {
-          setData(data.data.results);
+          setLinkdingBookmarks(data.data.results);
         })
         .catch((err) => {
           if (!axios.isCancel(err)) {
@@ -59,14 +59,14 @@ export default function searchLinkding() {
 
   function LinkdingAccountDropdown() {
     function setSelectedAccount(name: string): void {
-      const linkdingAccount = { name, ...getLinkdingAccountMap[name] };
+      const linkdingAccount = { name, ...linkdingAccountMap[name] };
       setSelectedLinkdingAccount(linkdingAccount);
       fetchBookmarks("", linkdingAccount);
     }
 
     return (
       <List.Dropdown tooltip="User Account" onChange={(name) => setSelectedAccount(name)} throttle storeValue>
-        {Object.keys(getLinkdingAccountMap).map((name) => (
+        {Object.keys(linkdingAccountMap).map((name) => (
           <List.Dropdown.Item key={name} title={name} value={name} />
         ))}
       </List.Dropdown>
@@ -76,13 +76,13 @@ export default function searchLinkding() {
   return (
     <List
       isLoading={isLoading}
-      onSearchTextChange={(searchText) => fetchBookmarks(searchText, getSelectedLinkdingAccount)}
+      onSearchTextChange={(searchText) => fetchBookmarks(searchText, selectedLinkdingAccount)}
       searchBarPlaceholder="Search bookmarks..."
       searchBarAccessory={<LinkdingAccountDropdown />}
       throttle
     >
-      <List.Section title="Results" subtitle={data?.length + ""}>
-        {data?.map((linkdingBookmark) => (
+      <List.Section title="Results" subtitle={linkdingBookmarks?.length + ""}>
+        {linkdingBookmarks?.map((linkdingBookmark) => (
           <SearchListItem key={linkdingBookmark.id} linkdingBookmark={linkdingBookmark} />
         ))}
       </List.Section>

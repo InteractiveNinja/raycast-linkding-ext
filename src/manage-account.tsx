@@ -4,28 +4,28 @@ import React, { useEffect, useState } from "react";
 import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./service/user-account-service";
 
 export default function manageAccounts() {
-  const [getLinkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
-  const [getSearchText, setSearchText] = useState("");
+  const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
+  const [searchText, setSearchText] = useState("");
   const { push } = useNavigation();
   useEffect(() => {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
         const searchedLinkdingAccounts = Object.keys(linkdingMap)
-          .filter((account) => getSearchText === "" || account.includes(getSearchText))
+          .filter((account) => searchText === "" || account.includes(searchText))
           .reduce((prev, account) => ({ ...prev, [account]: linkdingMap[account] }), {});
         setLinkdingAccountMap(searchedLinkdingAccounts);
       }
     });
-  }, [setLinkdingAccountMap, getSearchText]);
+  }, [setLinkdingAccountMap, searchText]);
 
   function deleteAccount(name: string): void {
-    const { [name]: removed, ...filteredMapEntries } = getLinkdingAccountMap;
+    const { [name]: removed, ...filteredMapEntries } = linkdingAccountMap;
     updateLinkdingAccountMap(filteredMapEntries);
   }
 
   function createUpdateAccount(account: LinkdingForm): void {
     const { name, ...linkdingServer } = account;
-    const accounts = { ...getLinkdingAccountMap, [name]: { ...linkdingServer } };
+    const accounts = { ...linkdingAccountMap, [name]: { ...linkdingServer } };
     updateLinkdingAccountMap(accounts);
   }
 
@@ -49,10 +49,10 @@ export default function manageAccounts() {
         </ActionPanel>
       }
     >
-      {Object.keys(getLinkdingAccountMap).length == 0 ? (
+      {Object.keys(linkdingAccountMap).length == 0 ? (
         <List.EmptyView title="No Accounts present" description="Create your first Account" />
       ) : (
-        Object.entries(getLinkdingAccountMap).map(([name, linkdingAccount]) => {
+        Object.entries(linkdingAccountMap).map(([name, linkdingAccount]) => {
           return (
             <List.Item
               key={name}
