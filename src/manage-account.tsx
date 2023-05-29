@@ -56,7 +56,7 @@ export default function ManageAccounts() {
       }
     >
       {Object.keys(linkdingAccountMap).length == 0 ? (
-        <List.EmptyView title="No Accounts present" description="Create your first Account" />
+        <List.EmptyView title="You dont have a Linkding Account" description="Create here your first Account" />
       ) : (
         Object.entries(linkdingAccountMap).map(([name, linkdingAccount]) => {
           return (
@@ -66,7 +66,7 @@ export default function ManageAccounts() {
               subtitle={linkdingAccount.serverUrl}
               actions={
                 <ActionPanel title="Manage Accounts">
-                  <Action title="Create New Account" onAction={() => showCreateEditAccount()} />
+                  <Action title="Create Account" onAction={() => showCreateEditAccount()} />
                   <Action title="Edit Account" onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
                   <Action title="Delete Account" onAction={() => deleteAccount(name)} />
                 </ActionPanel>
@@ -109,7 +109,7 @@ function CreateEditAccount({
     }
   }
 
-  function dropAcountNameError() {
+  function dropAccountNameError() {
     setAccountNameError(undefined);
   }
 
@@ -157,8 +157,8 @@ function CreateEditAccount({
           id="name"
           error={accountNameError}
           onBlur={(event) => validateAccountname(event.target.value)}
-          onChange={dropAcountNameError}
-          title="Accountname"
+          onChange={dropAccountNameError}
+          title="Account Name"
           placeholder="A Name for the Account"
         />
       )}

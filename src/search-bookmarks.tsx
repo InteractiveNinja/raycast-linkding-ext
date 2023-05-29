@@ -96,7 +96,7 @@ export default function searchLinkding() {
       <List>
         <List.EmptyView
           title="You dont have a Linkding Account"
-          description="Please first create an Linkding Account before searching for bookmarks"
+          description="Please first create a Linkding Account before searching for bookmarks"
         />
       </List>
     );
