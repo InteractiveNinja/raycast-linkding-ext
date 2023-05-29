@@ -1,6 +1,6 @@
 import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import axios, { CancelTokenSource } from "axios";
+import axios from "axios";
 import { Agent } from "https";
 import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm, LinkdingResponse } from "./types/linkding-types";
 
@@ -11,7 +11,7 @@ export default function searchLinkding() {
   const [getLinkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState<LinkdingBookmark[]>([]);
-  const cancelRef = useRef<CancelTokenSource | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
@@ -21,13 +21,20 @@ export default function searchLinkding() {
     });
   }, [setLinkdingAccountMap]);
 
+  function createAbortController(timeoutMs: number) {
+    const abortController = new AbortController();
+    setTimeout(() => abortController.abort(), timeoutMs || 0);
+
+    return abortController;
+  }
+
   function fetchBookmarks(searchText: string, linkdingAccount: LinkdingForm | null) {
     if (linkdingAccount) {
-      cancelRef.current?.cancel();
-      cancelRef.current = axios.CancelToken.source();
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = createAbortController(5000);
       setLoading(true);
       axios<LinkdingResponse>(`${linkdingAccount.serverUrl}/api/bookmarks?` + new URLSearchParams({ q: searchText }), {
-        cancelToken: cancelRef.current?.token,
+        signal: abortControllerRef.current?.signal,
         responseType: "json",
         httpsAgent: new Agent({ rejectUnauthorized: !linkdingAccount.ignoreSSL }),
         headers: { Authorization: `Token ${linkdingAccount.apiKey}` },
