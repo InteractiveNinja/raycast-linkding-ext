@@ -35,7 +35,13 @@ export default function manageAccounts() {
   }
 
   function showCreateEditAccount(formValue?: LinkdingForm) {
-    push(<CreateEditAccount initialValue={formValue} onSubmit={(formValue) => createUpdateAccount(formValue)} />);
+    push(
+      <CreateEditAccount
+        initialValue={formValue}
+        linkdingAccountMap={linkdingAccountMap}
+        onSubmit={(formValue) => createUpdateAccount(formValue)}
+      />
+    );
   }
 
   return (
@@ -76,20 +82,64 @@ export default function manageAccounts() {
 function CreateEditAccount({
   initialValue,
   onSubmit,
+  linkdingAccountMap,
 }: {
   initialValue?: LinkdingForm;
   onSubmit: (formValue: LinkdingForm) => void;
+  linkdingAccountMap: LinkdingAccountMap;
 }) {
   const { pop } = useNavigation();
+
+  const [accountNameError, setAccountNameError] = useState<string | undefined>();
+  const [serverUrlError, setServerUrlError] = useState<string | undefined>();
+  const [apiKeyError, setApiKeyError] = useState<string | undefined>();
 
   function submitForm(formValues: LinkdingForm): void {
     onSubmit(formValues);
     pop();
   }
 
+  function validateAccountname(value?: string) {
+    if (value) {
+      if (Object.keys(linkdingAccountMap).includes(value)) {
+        setAccountNameError("Name already used");
+      }
+    } else {
+      setAccountNameError("Name is required");
+    }
+  }
+
+  function dropAcountNameError() {
+    setAccountNameError(undefined);
+  }
+
+  function validateServerUrl(value?: string) {
+    if (value) {
+      if (!value.includes("http")) {
+        setServerUrlError("Server URL must start with 'http/s'");
+      }
+    } else {
+      setServerUrlError("Server URL is required");
+    }
+  }
+
+  function dropServerUrlError() {
+    setServerUrlError(undefined);
+  }
+
+  function validateApiKey(value?: string) {
+    if (!value) {
+      setApiKeyError("API Key is required");
+    }
+  }
+
+  function dropApiKeyError() {
+    setApiKeyError(undefined);
+  }
+
   return (
     <Form
-      navigationTitle={initialValue ? "Edit Linkding Account" : "Create new Linkding Account"}
+      navigationTitle={initialValue ? `Edit Linkding "${initialValue.name}" Account` : "Create new Linkding Account"}
       actions={
         <ActionPanel title="Manage Accounts">
           <Action.SubmitForm
@@ -99,21 +149,34 @@ function CreateEditAccount({
         </ActionPanel>
       }
     >
-      <Form.TextField
-        defaultValue={initialValue?.name}
-        id="name"
-        title="Accountname"
-        placeholder="A Name for the Account"
-      />
+      {initialValue?.name ? (
+        <Form.Description title="Accountname" text="Accountname cant be changed" />
+      ) : (
+        <Form.TextField
+          defaultValue={initialValue?.name}
+          id="name"
+          error={accountNameError}
+          onBlur={(event) => validateAccountname(event.target.value)}
+          onChange={dropAcountNameError}
+          title="Accountname"
+          placeholder="A Name for the Account"
+        />
+      )}
       <Form.TextField
         defaultValue={initialValue?.serverUrl}
         id="serverUrl"
+        error={serverUrlError}
+        onBlur={(event) => validateServerUrl(event.target.value)}
+        onChange={dropServerUrlError}
         title="Linkding Server URL"
         placeholder="URL from the Linkding instance"
       />
       <Form.PasswordField
         defaultValue={initialValue?.apiKey}
         id="apiKey"
+        error={apiKeyError}
+        onBlur={(event) => validateApiKey(event.target.value)}
+        onChange={dropApiKeyError}
         title="Linkding API Key"
         placeholder="API Key from from the Linkding instance"
       />
