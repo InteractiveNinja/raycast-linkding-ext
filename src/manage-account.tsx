@@ -5,14 +5,18 @@ import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./se
 
 export default function manageAccounts() {
   const [getLinkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
+  const [getSearchText, setSearchText] = useState("");
   const { push } = useNavigation();
   useEffect(() => {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
-        setLinkdingAccountMap(linkdingMap);
+        const searchedLinkdingAccounts = Object.keys(linkdingMap)
+          .filter((account) => getSearchText === "" || account.includes(getSearchText))
+          .reduce((prev, account) => ({ ...prev, [account]: linkdingMap[account] }), {});
+        setLinkdingAccountMap(searchedLinkdingAccounts);
       }
     });
-  }, [setLinkdingAccountMap]);
+  }, [setLinkdingAccountMap, getSearchText]);
 
   function deleteAccount(name: string): void {
     const { [name]: removed, ...filteredMapEntries } = getLinkdingAccountMap;
@@ -37,6 +41,8 @@ export default function manageAccounts() {
   return (
     <List
       navigationTitle="Manage Linkding Accounts"
+      onSearchTextChange={setSearchText}
+      throttle
       actions={
         <ActionPanel title="Manage Accounts">
           <Action title="Create New Account" onAction={() => showCreateEditAccount()} />
