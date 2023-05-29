@@ -3,7 +3,7 @@ import { LinkdingAccountMap, LinkdingForm } from "./types/linkding-types";
 import React, { useEffect, useState } from "react";
 import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./service/user-account-service";
 
-export default function manageAccounts() {
+export default function ManageAccounts() {
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [searchText, setSearchText] = useState("");
   const { push } = useNavigation();
@@ -95,7 +95,7 @@ function CreateEditAccount({
   const [apiKeyError, setApiKeyError] = useState<string | undefined>();
 
   function submitForm(formValues: LinkdingForm): void {
-    onSubmit(formValues);
+    onSubmit({ ...initialValue, ...formValues });
     pop();
   }
 

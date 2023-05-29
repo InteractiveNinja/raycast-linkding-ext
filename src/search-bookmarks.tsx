@@ -10,6 +10,7 @@ export default function searchLinkding() {
   const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | null>(null);
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [isLoading, setLoading] = useState(true);
+  const [hasLinkdingAccounts, setHasLindingAccounts] = useState(false);
   const [linkdingBookmarks, setLinkdingBookmarks] = useState<LinkdingBookmark[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -17,6 +18,7 @@ export default function searchLinkding() {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
         setLinkdingAccountMap(linkdingMap);
+        setHasLindingAccounts(Object.keys(linkdingMap).length > 0);
       }
     });
   }, [setLinkdingAccountMap]);
@@ -73,21 +75,32 @@ export default function searchLinkding() {
     );
   }
 
-  return (
-    <List
-      isLoading={isLoading}
-      onSearchTextChange={(searchText) => fetchBookmarks(searchText, selectedLinkdingAccount)}
-      searchBarPlaceholder="Search bookmarks..."
-      searchBarAccessory={<LinkdingAccountDropdown />}
-      throttle
-    >
-      <List.Section title="Results" subtitle={linkdingBookmarks?.length + ""}>
-        {linkdingBookmarks?.map((linkdingBookmark) => (
-          <SearchListItem key={linkdingBookmark.id} linkdingBookmark={linkdingBookmark} />
-        ))}
-      </List.Section>
-    </List>
-  );
+  if (hasLinkdingAccounts) {
+    return (
+      <List
+        isLoading={isLoading}
+        onSearchTextChange={(searchText) => fetchBookmarks(searchText, selectedLinkdingAccount)}
+        searchBarPlaceholder="Search bookmarks..."
+        searchBarAccessory={<LinkdingAccountDropdown />}
+        throttle
+      >
+        <List.Section title="Results" subtitle={linkdingBookmarks?.length + ""}>
+          {linkdingBookmarks?.map((linkdingBookmark) => (
+            <SearchListItem key={linkdingBookmark.id} linkdingBookmark={linkdingBookmark} />
+          ))}
+        </List.Section>
+      </List>
+    );
+  } else {
+    return (
+      <List>
+        <List.EmptyView
+          title="You dont have a Linkding Account"
+          description="Please first create an Linkding Account before searching for bookmarks"
+        />
+      </List>
+    );
+  }
 }
 
 function SearchListItem({ linkdingBookmark }: { linkdingBookmark: LinkdingBookmark }) {
