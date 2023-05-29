@@ -43,11 +43,13 @@ export default function searchLinkding() {
           setData(data.data.results);
         })
         .catch((err) => {
-          showToast({
-            style: Toast.Style.Failure,
-            title: "Something went wrong",
-            message: err.message,
-          });
+          if (!axios.isCancel(err)) {
+            showToast({
+              style: Toast.Style.Failure,
+              title: "Something went wrong",
+              message: err.message,
+            });
+          }
         })
         .finally(() => {
           setLoading(false);
