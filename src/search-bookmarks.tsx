@@ -80,7 +80,7 @@ export default function searchLinkding() {
       <List
         isLoading={isLoading}
         onSearchTextChange={(searchText) => fetchBookmarks(searchText, selectedLinkdingAccount)}
-        searchBarPlaceholder="Search bookmarks..."
+        searchBarPlaceholder="Search through bookmarks..."
         searchBarAccessory={<LinkdingAccountDropdown />}
         throttle
       >
@@ -96,7 +96,7 @@ export default function searchLinkding() {
       <List>
         <List.EmptyView
           title="You dont have a Linkding Account"
-          description="Please first create a Linkding Account before searching for bookmarks"
+          description="Please create a linking account before searching for bookmarks."
         />
       </List>
     );

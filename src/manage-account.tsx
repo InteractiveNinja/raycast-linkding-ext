@@ -47,6 +47,7 @@ export default function ManageAccounts() {
   return (
     <List
       navigationTitle="Manage Linkding Accounts"
+      searchBarPlaceholder="Search through Accounts..."
       onSearchTextChange={setSearchText}
       throttle
       actions={
@@ -56,7 +57,10 @@ export default function ManageAccounts() {
       }
     >
       {Object.keys(linkdingAccountMap).length == 0 ? (
-        <List.EmptyView title="You dont have a Linkding Account" description="Create here your first Account" />
+        <List.EmptyView
+          title="Your Linkding Account is not set up yet."
+          description="Here, you can create your first account."
+        />
       ) : (
         Object.entries(linkdingAccountMap).map(([name, linkdingAccount]) => {
           return (

@@ -15,4 +15,4 @@
 - Fixes a bug, where axios cancellations would be shown as an error toast message
 - Removes usage of the preference system for Linkding account
 - Adds System for multi-linkding Instances
-- Ability to search trough Bookmarks from different Linkding Instances.
+- Ability to search through Bookmarks from different Linkding Instances.
