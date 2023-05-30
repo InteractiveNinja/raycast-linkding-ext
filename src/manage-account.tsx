@@ -6,10 +6,12 @@ import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./se
 export default function ManageAccounts() {
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [searchText, setSearchText] = useState("");
+  const [hasAccounts, setHasAccounts] = useState(false);
   const { push } = useNavigation();
   useEffect(() => {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
+        setHasAccounts(Object.keys(linkdingMap).length > 0);
         const searchedLinkdingAccounts = Object.keys(linkdingMap)
           .filter((account) => searchText === "" || account.includes(searchText))
           .reduce((prev, account) => ({ ...prev, [account]: linkdingMap[account] }), {});
@@ -56,7 +58,7 @@ export default function ManageAccounts() {
         </ActionPanel>
       }
     >
-      {Object.keys(linkdingAccountMap).length == 0 ? (
+      {Object.keys(linkdingAccountMap).length == 0 && !hasAccounts ? (
         <List.EmptyView
           title="Your Linkding Account is not set up yet."
           description="Here, you can create your first account."
