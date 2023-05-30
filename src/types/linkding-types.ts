@@ -19,7 +19,7 @@ export interface LinkdingServer {
 }
 
 export interface LinkdingForm extends LinkdingServer {
-  name: string;
+  name?: string;
 }
 
 export type LinkdingAccountMap = { [name: string]: LinkdingServer };

@@ -99,7 +99,12 @@ function CreateEditAccount({
   const [apiKeyError, setApiKeyError] = useState<string | undefined>();
 
   function submitForm(formValues: LinkdingForm): void {
-    onSubmit({ ...initialValue, ...formValues });
+    onSubmit({
+      name: formValues.name?.trim() ?? initialValue?.name,
+      apiKey: formValues.apiKey.trim(),
+      serverUrl: formValues.serverUrl.trim(),
+      ignoreSSL: formValues.ignoreSSL,
+    });
     pop();
   }
 
