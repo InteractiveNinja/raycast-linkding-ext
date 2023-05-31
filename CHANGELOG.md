@@ -12,7 +12,7 @@
 
 ## [Multi-Linkding Instances & Axios cancellation toast fix] - 2023-05-29
 
-- Fixes a bug, where axios cancellations would be shown as an error toast message
+- Fixes a bug, where axios cancellations would be shown as an error toast message, Thanks @vkhitrin
 - Removes usage of the preference system for Linkding account
 - Adds System for multi-linkding Instances
 - Ability to search through Bookmarks from different Linkding Instances.
