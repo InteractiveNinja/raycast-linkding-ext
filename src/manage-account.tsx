@@ -27,8 +27,10 @@ export default function ManageAccounts() {
 
   function createUpdateAccount(account: LinkdingForm): void {
     const { name, ...linkdingServer } = account;
-    const accounts = { ...linkdingAccountMap, [name]: { ...linkdingServer } };
-    updateLinkdingAccountMap(accounts);
+    if (name) {
+      const accounts = { ...linkdingAccountMap, [name]: { ...linkdingServer } };
+      updateLinkdingAccountMap(accounts);
+    }
   }
 
   function updateLinkdingAccountMap(linkdingMap: LinkdingAccountMap) {
