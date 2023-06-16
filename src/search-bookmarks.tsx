@@ -104,6 +104,13 @@ export default function searchLinkding() {
 }
 
 function SearchListItem({ linkdingBookmark }: { linkdingBookmark: LinkdingBookmark }) {
+  function showCopyToast() {
+    showToast({
+      style: Toast.Style.Success,
+      title: "Copied to Clipboard",
+    });
+  }
+
   return (
     <List.Item
       title={
@@ -117,7 +124,12 @@ function SearchListItem({ linkdingBookmark }: { linkdingBookmark: LinkdingBookma
       actions={
         <ActionPanel>
           <ActionPanel.Section>
-            <Action.OpenInBrowser title="Open in Browser" url={linkdingBookmark.url} />
+            <Action.OpenInBrowser url={linkdingBookmark.url} />
+            <Action.CopyToClipboard
+              content={linkdingBookmark.url}
+              onCopy={showCopyToast}
+              shortcut={{ modifiers: ["opt"], key: "c" }}
+            />
           </ActionPanel.Section>
         </ActionPanel>
       }
