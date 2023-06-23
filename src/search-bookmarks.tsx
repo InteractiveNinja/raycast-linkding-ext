@@ -114,7 +114,7 @@ function SearchListItem({ linkdingBookmark }: { linkdingBookmark: LinkdingBookma
             <Action.CopyToClipboard
               content={linkdingBookmark.url}
               onCopy={showCopyToast}
-              shortcut={{ modifiers: ["opt"], key: "c" }}
+              shortcut={{ modifiers: ["cmd"], key: "enter" }}
             />
           </ActionPanel.Section>
         </ActionPanel>
