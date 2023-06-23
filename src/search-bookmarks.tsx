@@ -5,7 +5,7 @@ import { Agent } from "https";
 import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm, LinkdingResponse } from "./types/linkding-types";
 
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
-import { showErrorToast } from "./service/bookmark-service";
+import { searchBookmarks, showErrorToast } from "./service/bookmark-service";
 
 export default function searchLinkding() {
   const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | null>(null);
@@ -36,12 +36,7 @@ export default function searchLinkding() {
       abortControllerRef.current?.abort();
       abortControllerRef.current = createAbortController(5000);
       setLoading(true);
-      axios<LinkdingResponse>(`${linkdingAccount.serverUrl}/api/bookmarks?` + new URLSearchParams({ q: searchText }), {
-        signal: abortControllerRef.current?.signal,
-        responseType: "json",
-        httpsAgent: new Agent({ rejectUnauthorized: !linkdingAccount.ignoreSSL }),
-        headers: { Authorization: `Token ${linkdingAccount.apiKey}` },
-      })
+      searchBookmarks(linkdingAccount, searchText, abortControllerRef)
         .then((data) => {
           setLinkdingBookmarks(data.data.results);
         })
