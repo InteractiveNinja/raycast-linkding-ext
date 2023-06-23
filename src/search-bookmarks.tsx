@@ -1,17 +1,19 @@
-import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, Icon, List } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm } from "./types/linkding-types";
+import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm, LinkdingServer } from "./types/linkding-types";
 
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
-import { searchBookmarks, showErrorToast } from "./service/bookmark-service";
+import { deleteBookmark, searchBookmarks } from "./service/bookmark-service";
+import { showErrorToast, showSuccessToast } from "./util/bookmark-util";
 
 export default function searchLinkding() {
-  const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | null>(null);
+  const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | LinkdingServer | null>(null);
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [isLoading, setLoading] = useState(true);
   const [hasLinkdingAccounts, setHasLindingAccounts] = useState(false);
   const [linkdingBookmarks, setLinkdingBookmarks] = useState<LinkdingBookmark[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
@@ -21,6 +23,10 @@ export default function searchLinkding() {
       }
     });
   }, [setLinkdingAccountMap]);
+
+  useEffect(() => {
+    fetchBookmarks(searchText, selectedLinkdingAccount);
+  }, [selectedLinkdingAccount, searchText]);
 
   function createAbortController(timeoutMs: number) {
     abortControllerRef.current?.abort();
@@ -45,6 +51,15 @@ export default function searchLinkding() {
     }
   }
 
+  function deleteBookmarkCallback(bookmarkId: number) {
+    if (selectedLinkdingAccount) {
+      deleteBookmark(selectedLinkdingAccount, bookmarkId).then(() => {
+        showSuccessToast("Bookmark deleted");
+        fetchBookmarks(searchText, selectedLinkdingAccount);
+      });
+    }
+  }
+
   function LinkdingAccountDropdown() {
     function setSelectedAccount(name: string): void {
       const linkdingAccount = { name, ...linkdingAccountMap[name] };
@@ -65,14 +80,18 @@ export default function searchLinkding() {
     return (
       <List
         isLoading={isLoading}
-        onSearchTextChange={(searchText) => fetchBookmarks(searchText, selectedLinkdingAccount)}
+        onSearchTextChange={setSearchText}
         searchBarPlaceholder="Search through bookmarks..."
         searchBarAccessory={<LinkdingAccountDropdown />}
         throttle
       >
         <List.Section title="Results" subtitle={linkdingBookmarks?.length + ""}>
           {linkdingBookmarks?.map((linkdingBookmark) => (
-            <SearchListItem key={linkdingBookmark.id} linkdingBookmark={linkdingBookmark} />
+            <SearchListItem
+              key={linkdingBookmark.id}
+              linkdingBookmark={linkdingBookmark}
+              deleteBookmarkCallback={deleteBookmarkCallback}
+            />
           ))}
         </List.Section>
       </List>
@@ -89,12 +108,15 @@ export default function searchLinkding() {
   }
 }
 
-function SearchListItem({ linkdingBookmark }: { linkdingBookmark: LinkdingBookmark }) {
+function SearchListItem({
+  linkdingBookmark,
+  deleteBookmarkCallback,
+}: {
+  linkdingBookmark: LinkdingBookmark;
+  deleteBookmarkCallback: (bookmarkId: number) => void;
+}) {
   function showCopyToast() {
-    showToast({
-      style: Toast.Style.Success,
-      title: "Copied to Clipboard",
-    });
+    showSuccessToast("Copied to Clipboard");
   }
 
   return (
@@ -115,6 +137,12 @@ function SearchListItem({ linkdingBookmark }: { linkdingBookmark: LinkdingBookma
               content={linkdingBookmark.url}
               onCopy={showCopyToast}
               shortcut={{ modifiers: ["cmd"], key: "enter" }}
+            />
+            <Action
+              onAction={() => deleteBookmarkCallback(linkdingBookmark.id)}
+              icon={{ source: Icon.Trash }}
+              title="Delete"
+              shortcut={{ modifiers: ["cmd"], key: "delete" }}
             />
           </ActionPanel.Section>
         </ActionPanel>

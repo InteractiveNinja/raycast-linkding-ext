@@ -1,16 +1,14 @@
-import axios, { AxiosError } from "axios";
-import { showToast, Toast } from "@raycast/api";
+import axios, { AxiosRequestConfig } from "axios";
 import { LinkdingResponse, LinkdingServer } from "../types/linkding-types";
 import { Agent } from "https";
+import { showErrorToast } from "../util/bookmark-util";
 
-export function showErrorToast(err: Error | AxiosError) {
-  if (!axios.isCancel(err)) {
-    showToast({
-      style: Toast.Style.Failure,
-      title: "Something went wrong",
-      message: err.message,
-    });
-  }
+function createAxiosAgentConfig(linkdingAccount: LinkdingServer): AxiosRequestConfig {
+  return {
+    responseType: "json",
+    httpsAgent: new Agent({ rejectUnauthorized: !linkdingAccount.ignoreSSL }),
+    headers: { Authorization: `Token ${linkdingAccount.apiKey}` },
+  };
 }
 
 export function searchBookmarks(
@@ -22,9 +20,15 @@ export function searchBookmarks(
     `${linkdingAccount.serverUrl}/api/bookmarks?` + new URLSearchParams({ q: searchText }),
     {
       signal: abortControllerRef.current?.signal,
-      responseType: "json",
-      httpsAgent: new Agent({ rejectUnauthorized: !linkdingAccount.ignoreSSL }),
-      headers: { Authorization: `Token ${linkdingAccount.apiKey}` },
+      ...createAxiosAgentConfig(linkdingAccount),
     }
   );
+}
+
+export function deleteBookmark(linkdingAccount: LinkdingServer, bookmarkId: number) {
+  return axios
+    .delete(`${linkdingAccount.serverUrl}/api/bookmarks/${bookmarkId}`, {
+      ...createAxiosAgentConfig(linkdingAccount),
+    })
+    .catch(showErrorToast);
 }
