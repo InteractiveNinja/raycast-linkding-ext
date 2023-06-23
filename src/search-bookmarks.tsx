@@ -1,8 +1,6 @@
 import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { Agent } from "https";
-import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm, LinkdingResponse } from "./types/linkding-types";
+import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm } from "./types/linkding-types";
 
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
 import { searchBookmarks, showErrorToast } from "./service/bookmark-service";
@@ -25,16 +23,16 @@ export default function searchLinkding() {
   }, [setLinkdingAccountMap]);
 
   function createAbortController(timeoutMs: number) {
+    abortControllerRef.current?.abort();
     const abortController = new AbortController();
     setTimeout(() => abortController.abort(), timeoutMs || 0);
-
+    abortControllerRef.current = abortController;
     return abortController;
   }
 
   function fetchBookmarks(searchText: string, linkdingAccount: LinkdingForm | null) {
     if (linkdingAccount) {
-      abortControllerRef.current?.abort();
-      abortControllerRef.current = createAbortController(5000);
+      createAbortController(5000);
       setLoading(true);
       searchBookmarks(linkdingAccount, searchText, abortControllerRef)
         .then((data) => {
