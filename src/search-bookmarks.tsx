@@ -5,6 +5,7 @@ import { Agent } from "https";
 import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm, LinkdingResponse } from "./types/linkding-types";
 
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
+import { showErrorToast } from "./service/bookmark-service";
 
 export default function searchLinkding() {
   const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | null>(null);
@@ -44,15 +45,7 @@ export default function searchLinkding() {
         .then((data) => {
           setLinkdingBookmarks(data.data.results);
         })
-        .catch((err) => {
-          if (!axios.isCancel(err)) {
-            showToast({
-              style: Toast.Style.Failure,
-              title: "Something went wrong",
-              message: err.message,
-            });
-          }
-        })
+        .catch(showErrorToast)
         .finally(() => {
           setLoading(false);
         });
