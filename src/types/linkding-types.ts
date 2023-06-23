@@ -2,9 +2,9 @@ export interface LinkdingBookmark {
   id: number;
   url: string;
   title: string;
-  description: string;
-  website_title: string;
-  website_description: string;
+  description?: string;
+  website_title?: string;
+  website_description?: string;
 }
 
 export interface LinkdingResponse {
@@ -23,3 +23,19 @@ export interface LinkdingForm extends LinkdingServer {
 }
 
 export type LinkdingAccountMap = { [name: string]: LinkdingServer };
+
+export interface WebsiteMetadata {
+  title: string;
+  description?: string;
+}
+
+export interface LinkdingBookmarkPayload {
+  url: string;
+  title: string;
+  description: string;
+  notes: string;
+  is_archived: boolean;
+  unread: boolean;
+  shared: boolean;
+  tag_names: string[];
+}

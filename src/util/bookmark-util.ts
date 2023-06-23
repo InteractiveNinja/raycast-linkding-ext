@@ -1,12 +1,12 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { showToast, Toast } from "@raycast/api";
 
-export function showErrorToast(err: Error | AxiosError) {
-  if (!axios.isCancel(err)) {
+export function showErrorToast(error: any) {
+  if (!axios.isCancel(error)) {
     showToast({
       style: Toast.Style.Failure,
       title: "Something went wrong",
-      message: err.message,
+      message: error.message,
     });
   }
 }
@@ -17,4 +17,8 @@ export function showSuccessToast(message: string) {
     title: "Success",
     message,
   });
+}
+
+export function validateUrl(url: string) {
+  return url.startsWith("http://") || url.startsWith("https://");
 }

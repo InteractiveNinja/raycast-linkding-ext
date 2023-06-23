@@ -1,7 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { LinkdingResponse, LinkdingServer } from "../types/linkding-types";
+import { LinkdingBookmarkPayload, LinkdingResponse, LinkdingServer, WebsiteMetadata } from "../types/linkding-types";
 import { Agent } from "https";
 import { showErrorToast } from "../util/bookmark-util";
+import { load } from "cheerio";
 
 function createAxiosAgentConfig(linkdingAccount: LinkdingServer): AxiosRequestConfig {
   return {
@@ -29,6 +30,26 @@ export function deleteBookmark(linkdingAccount: LinkdingServer, bookmarkId: numb
   return axios
     .delete(`${linkdingAccount.serverUrl}/api/bookmarks/${bookmarkId}`, {
       ...createAxiosAgentConfig(linkdingAccount),
+    })
+    .catch(showErrorToast);
+}
+
+export function createBookmark(linkdingAccount: LinkdingServer, bookmark: LinkdingBookmarkPayload) {
+  return axios
+    .post(`${linkdingAccount.serverUrl}/api/bookmarks/`, bookmark, {
+      ...createAxiosAgentConfig(linkdingAccount),
+    })
+    .catch(showErrorToast);
+}
+
+export function getWebsiteMetadata(url: string): Promise<WebsiteMetadata | void> {
+  return axios
+    .get(url)
+    .then((response) => {
+      const $ = load(response.data);
+      const title = $("title").text();
+      const description = $("meta[name='description']").attr("content");
+      return { title, description };
     })
     .catch(showErrorToast);
 }

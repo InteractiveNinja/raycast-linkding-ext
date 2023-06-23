@@ -21,11 +21,18 @@
       "title": "Manage Linkding Accounts",
       "description": "Mange your Linkding Accounts and Servers",
       "mode": "view"
+    },
+    {
+      "name": "create-bookmarks",
+      "title": "Create Bookmark",
+      "description": "Create new Bookmarks",
+      "mode": "view"
     }
   ],
   "dependencies": {
     "@raycast/api": "^1.52.0",
-    "axios": "^1.3.4"
+    "axios": "^1.3.4",
+    "cheerio": "^1.0.0-rc.12"
   },
   "devDependencies": {
     "@raycast/eslint-config": "1.0.5",

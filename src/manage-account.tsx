@@ -2,6 +2,7 @@ import { Action, ActionPanel, Form, List, useNavigation } from "@raycast/api";
 import { LinkdingAccountMap, LinkdingForm } from "./types/linkding-types";
 import React, { useEffect, useState } from "react";
 import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./service/user-account-service";
+import { validateUrl } from "./util/bookmark-util";
 
 export default function ManageAccounts() {
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
@@ -128,8 +129,8 @@ function CreateEditAccount({
 
   function validateServerUrl(value?: string) {
     if (value) {
-      if (!value.includes("http")) {
-        setServerUrlError("Server URL must start with 'http/s'");
+      if (!validateUrl(value)) {
+        setServerUrlError("Server URL must be a valide url");
       }
     } else {
       setServerUrlError("Server URL is required");

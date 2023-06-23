@@ -127,7 +127,9 @@ function SearchListItem({
           : linkdingBookmark.website_title ?? linkdingBookmark.url
       }
       subtitle={
-        linkdingBookmark.description.length > 0 ? linkdingBookmark.description : linkdingBookmark.website_description
+        linkdingBookmark.description && linkdingBookmark.description.length > 0
+          ? linkdingBookmark.description
+          : linkdingBookmark.website_description
       }
       actions={
         <ActionPanel>
