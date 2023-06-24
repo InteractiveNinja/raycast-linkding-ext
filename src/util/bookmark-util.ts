@@ -1,12 +1,12 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { showToast, Toast } from "@raycast/api";
 
-export function showErrorToast(error: any) {
+export function showErrorToast(error?: Error | AxiosError) {
   if (!axios.isCancel(error)) {
     showToast({
       style: Toast.Style.Failure,
       title: "Something went wrong",
-      message: error.message,
+      ...(error && error.message ? { message: error.message } : {}),
     });
   }
 }
