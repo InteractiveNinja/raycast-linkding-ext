@@ -47,8 +47,8 @@ export function getWebsiteMetadata(url: string): Promise<WebsiteMetadata | void>
     .get(url)
     .then((response) => {
       const $ = load(response.data);
-      const title = $("title").text();
-      const description = $("meta[name='description']").attr("content");
+      const title = $("title").text().trim();
+      const description = $("meta[name='description']").attr("content")?.trim();
       return { title, description };
     })
     .catch(showErrorToast);
