@@ -13,6 +13,8 @@ Uses Raycast to search through Linking Bookmarks.
 
 - Support Bookmark search through multiple Linkding Accounts and Servers
 - Open Bookmarks in the Browser
+- Copy Bookmarks to Clipboard
+- Create and delete Bookmarks in the Extension
 
 ## Notice
 
@@ -20,7 +22,7 @@ The Linkding API Key and Server URL from your Linkding instance are needed to us
 
 ## Planned Features
 
-- Create, Update, Delete Bookmarks in extension
+- Update Bookmarks in extension
 
 ## Contributing
 
