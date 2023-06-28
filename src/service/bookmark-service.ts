@@ -1,10 +1,10 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { LinkdingBookmarkPayload, LinkdingResponse, LinkdingServer, WebsiteMetadata } from "../types/linkding-types";
+import { GetLinkdingBookmarkResponse, LinkdingAccount, PostLinkdingBookmarkPayload } from "../types/linkding-types";
 import { Agent } from "https";
 import { showErrorToast } from "../util/bookmark-util";
 import { load } from "cheerio";
 
-function createAxiosAgentConfig(linkdingAccount: LinkdingServer): AxiosRequestConfig {
+function createAxiosAgentConfig(linkdingAccount: LinkdingAccount): AxiosRequestConfig {
   return {
     responseType: "json",
     httpsAgent: new Agent({ rejectUnauthorized: !linkdingAccount.ignoreSSL }),
@@ -13,11 +13,11 @@ function createAxiosAgentConfig(linkdingAccount: LinkdingServer): AxiosRequestCo
 }
 
 export function searchBookmarks(
-  linkdingAccount: LinkdingServer,
+  linkdingAccount: LinkdingAccount,
   searchText: string,
   abortControllerRef: React.MutableRefObject<AbortController | null>
 ) {
-  return axios<LinkdingResponse>(
+  return axios<GetLinkdingBookmarkResponse>(
     `${linkdingAccount.serverUrl}/api/bookmarks?` + new URLSearchParams({ q: searchText }),
     {
       signal: abortControllerRef.current?.signal,
@@ -26,7 +26,7 @@ export function searchBookmarks(
   );
 }
 
-export function deleteBookmark(linkdingAccount: LinkdingServer, bookmarkId: number) {
+export function deleteBookmark(linkdingAccount: LinkdingAccount, bookmarkId: number) {
   return axios
     .delete(`${linkdingAccount.serverUrl}/api/bookmarks/${bookmarkId}`, {
       ...createAxiosAgentConfig(linkdingAccount),
@@ -34,7 +34,7 @@ export function deleteBookmark(linkdingAccount: LinkdingServer, bookmarkId: numb
     .catch(showErrorToast);
 }
 
-export function createBookmark(linkdingAccount: LinkdingServer, bookmark: LinkdingBookmarkPayload) {
+export function createBookmark(linkdingAccount: LinkdingAccount, bookmark: PostLinkdingBookmarkPayload) {
   return axios
     .post(`${linkdingAccount.serverUrl}/api/bookmarks/`, bookmark, {
       ...createAxiosAgentConfig(linkdingAccount),
@@ -42,7 +42,7 @@ export function createBookmark(linkdingAccount: LinkdingServer, bookmark: Linkdi
     .catch(showErrorToast);
 }
 
-export function getWebsiteMetadata(url: string): Promise<WebsiteMetadata | void> {
+export function getWebsiteMetadata(url: string) {
   return axios
     .get(url)
     .then((response) => {

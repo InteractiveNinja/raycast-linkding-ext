@@ -1,5 +1,5 @@
 import { Action, ActionPanel, Form, popToRoot } from "@raycast/api";
-import { LinkdingAccountMap, LinkdingBookmarkPayload } from "./types/linkding-types";
+import { LinkdingAccountMap, PostLinkdingBookmarkPayload } from "./types/linkding-types";
 import React, { useEffect, useState } from "react";
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
 import { showSuccessToast, validateUrl } from "./util/bookmark-util";
@@ -53,7 +53,7 @@ export default function CreateBookmarks() {
     setUrlError(undefined);
   }
 
-  function submitForm(formValues: LinkdingBookmarkPayload & { linkdingAccountName: string }) {
+  function submitForm(formValues: PostLinkdingBookmarkPayload & { linkdingAccountName: string }) {
     const linkdingAccount = linkdingAccountMap[formValues.linkdingAccountName];
     createBookmark(linkdingAccount, {
       ...formValues,
@@ -73,7 +73,7 @@ export default function CreateBookmarks() {
         <ActionPanel title="Create Bookmark">
           <Action.SubmitForm
             onSubmit={(
-              formValues: LinkdingBookmarkPayload & {
+              formValues: PostLinkdingBookmarkPayload & {
                 linkdingAccountName: string;
               }
             ) => submitForm(formValues)}

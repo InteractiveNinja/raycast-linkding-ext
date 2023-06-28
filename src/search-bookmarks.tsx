@@ -1,13 +1,15 @@
 import { Action, ActionPanel, Icon, List } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { LinkdingAccountMap, LinkdingBookmark, LinkdingForm, LinkdingServer } from "./types/linkding-types";
+import { LinkdingAccount, LinkdingAccountForm, LinkdingAccountMap, LinkdingBookmark } from "./types/linkding-types";
 
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
 import { deleteBookmark, searchBookmarks } from "./service/bookmark-service";
 import { showErrorToast, showSuccessToast } from "./util/bookmark-util";
 
 export default function searchLinkding() {
-  const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingForm | LinkdingServer | null>(null);
+  const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingAccountForm | LinkdingAccount | null>(
+    null
+  );
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [isLoading, setLoading] = useState(true);
   const [hasLinkdingAccounts, setHasLindingAccounts] = useState(false);
@@ -36,7 +38,7 @@ export default function searchLinkding() {
     return abortController;
   }
 
-  function fetchBookmarks(searchText: string, linkdingAccount: LinkdingForm | null) {
+  function fetchBookmarks(searchText: string, linkdingAccount: LinkdingAccountForm | null) {
     if (linkdingAccount) {
       createAbortController(5000);
       setLoading(true);

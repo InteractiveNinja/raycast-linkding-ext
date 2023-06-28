@@ -1,5 +1,5 @@
 import { Action, ActionPanel, Form, List, useNavigation } from "@raycast/api";
-import { LinkdingAccountMap, LinkdingForm } from "./types/linkding-types";
+import { LinkdingAccountForm, LinkdingAccountMap } from "./types/linkding-types";
 import React, { useEffect, useState } from "react";
 import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./service/user-account-service";
 import { validateUrl } from "./util/bookmark-util";
@@ -26,7 +26,7 @@ export default function ManageAccounts() {
     updateLinkdingAccountMap(filteredMapEntries);
   }
 
-  function createUpdateAccount(account: LinkdingForm): void {
+  function createUpdateAccount(account: LinkdingAccountForm): void {
     const { name, ...linkdingServer } = account;
     if (name) {
       const accounts = { ...linkdingAccountMap, [name]: { ...linkdingServer } };
@@ -39,7 +39,7 @@ export default function ManageAccounts() {
     setPersistedLinkdingAccounts(linkdingMap);
   }
 
-  function showCreateEditAccount(formValue?: LinkdingForm) {
+  function showCreateEditAccount(formValue?: LinkdingAccountForm) {
     push(
       <CreateEditAccount
         initialValue={formValue}
@@ -93,8 +93,8 @@ function CreateEditAccount({
   onSubmit,
   linkdingAccountMap,
 }: {
-  initialValue?: LinkdingForm;
-  onSubmit: (formValue: LinkdingForm) => void;
+  initialValue?: LinkdingAccountForm;
+  onSubmit: (formValue: LinkdingAccountForm) => void;
   linkdingAccountMap: LinkdingAccountMap;
 }) {
   const { pop } = useNavigation();
@@ -103,7 +103,7 @@ function CreateEditAccount({
   const [serverUrlError, setServerUrlError] = useState<string | undefined>();
   const [apiKeyError, setApiKeyError] = useState<string | undefined>();
 
-  function submitForm(formValues: LinkdingForm): void {
+  function submitForm(formValues: LinkdingAccountForm): void {
     onSubmit({
       name: formValues.name?.trim() ?? initialValue?.name,
       apiKey: formValues.apiKey.trim(),
@@ -158,7 +158,7 @@ function CreateEditAccount({
         <ActionPanel title="Manage Accounts">
           <Action.SubmitForm
             title={initialValue ? "Edit Account" : "Create Account"}
-            onSubmit={(values: LinkdingForm) => submitForm(values)}
+            onSubmit={(values: LinkdingAccountForm) => submitForm(values)}
           />
         </ActionPanel>
       }

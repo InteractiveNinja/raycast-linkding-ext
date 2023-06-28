@@ -7,29 +7,29 @@ export interface LinkdingBookmark {
   website_description?: string;
 }
 
-export interface LinkdingResponse {
+export interface GetLinkdingBookmarkResponse {
   count: number;
   results: LinkdingBookmark[];
 }
 
-export interface LinkdingServer {
+export interface LinkdingAccount {
   serverUrl: string;
   apiKey: string;
   ignoreSSL: boolean;
 }
 
-export interface LinkdingForm extends LinkdingServer {
+export interface LinkdingAccountForm extends LinkdingAccount {
   name?: string;
 }
 
-export type LinkdingAccountMap = { [name: string]: LinkdingServer };
+export type LinkdingAccountMap = { [name: string]: LinkdingAccount };
 
 export interface WebsiteMetadata {
   title: string;
   description?: string;
 }
 
-export interface LinkdingBookmarkPayload {
+export interface PostLinkdingBookmarkPayload {
   url: string;
   title: string;
   description: string;
