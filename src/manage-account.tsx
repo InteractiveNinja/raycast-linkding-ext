@@ -3,6 +3,7 @@ import { LinkdingAccountForm, LinkdingAccountMap } from "./types/linkding-types"
 import React, { useEffect, useState } from "react";
 import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./service/user-account-service";
 import { validateUrl } from "./util/bookmark-util";
+import { LinkdingShortcut } from "./types/linkding-shortcuts";
 
 export default function ManageAccounts() {
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
@@ -77,7 +78,11 @@ export default function ManageAccounts() {
                 <ActionPanel title="Manage Accounts">
                   <Action title="Create Account" onAction={() => showCreateEditAccount()} />
                   <Action title="Edit Account" onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
-                  <Action title="Delete Account" onAction={() => deleteAccount(name)} />
+                  <Action
+                    title="Delete Account"
+                    shortcut={LinkdingShortcut.DELETE_SHORTCUT}
+                    onAction={() => deleteAccount(name)}
+                  />
                 </ActionPanel>
               }
             />

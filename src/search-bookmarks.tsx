@@ -5,6 +5,7 @@ import { LinkdingAccount, LinkdingAccountForm, LinkdingAccountMap, LinkdingBookm
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
 import { deleteBookmark, searchBookmarks } from "./service/bookmark-service";
 import { showErrorToast, showSuccessToast } from "./util/bookmark-util";
+import { LinkdingShortcut } from "./types/linkding-shortcuts";
 
 export default function searchLinkding() {
   const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingAccountForm | LinkdingAccount | null>(
@@ -140,13 +141,13 @@ function SearchListItem({
             <Action.CopyToClipboard
               content={linkdingBookmark.url}
               onCopy={showCopyToast}
-              shortcut={{ modifiers: ["cmd"], key: "enter" }}
+              shortcut={LinkdingShortcut.COPY_SHORTCUT}
             />
             <Action
               onAction={() => deleteBookmarkCallback(linkdingBookmark.id)}
               icon={{ source: Icon.Trash }}
               title="Delete"
-              shortcut={{ modifiers: ["cmd"], key: "delete" }}
+              shortcut={LinkdingShortcut.DELETE_SHORTCUT}
             />
           </ActionPanel.Section>
         </ActionPanel>
