@@ -1,3 +1,9 @@
+export interface Preferences {
+  showSubtitle: boolean;
+  showFavicon: boolean;
+  subtitleSource: "description" | "note";
+}
+
 export interface LinkdingBookmark {
   id: number;
   url: string;

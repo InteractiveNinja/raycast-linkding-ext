@@ -29,6 +29,43 @@
       "mode": "view"
     }
   ],
+  "preferences": [
+    {
+      "title": "Bookmark list layout",
+      "name": "showFavicon",
+      "type": "checkbox",
+      "label": "Show favicon",
+      "description": "Display the favicon",
+      "default": true,
+      "required": false
+    },
+    {
+      "name": "showSubtitle",
+      "type": "checkbox",
+      "label": "Show subtitle",
+      "description": "Show the subtitle",
+      "default": true,
+      "required": false
+    },
+    {
+      "name": "subtitleSource",
+      "title": "Subtitle source",
+      "description": "Choose the subtitle source",
+      "type": "dropdown",
+      "required": false,
+      "data": [
+        {
+          "title": "Description",
+          "value": "description"
+        },
+        {
+          "title": "Note",
+          "value": "note"
+        }
+      ],
+      "default": "description"
+    }
+  ],
   "dependencies": {
     "@raycast/api": "^1.60.0",
     "axios": "^1.6.0",

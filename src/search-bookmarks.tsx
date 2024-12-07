@@ -1,6 +1,6 @@
-import { Action, ActionPanel, Icon, List } from "@raycast/api";
+import { Action, ActionPanel, Icon, Image, List, getPreferenceValues } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { LinkdingAccount, LinkdingAccountForm, LinkdingAccountMap, LinkdingBookmark } from "./types/linkding-types";
+import { LinkdingAccount, LinkdingAccountForm, LinkdingAccountMap, LinkdingBookmark, Preferences } from "./types/linkding-types";
 
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
 import { deleteBookmark, searchBookmarks } from "./service/bookmark-service";
@@ -118,6 +118,8 @@ function SearchListItem({
   linkdingBookmark: LinkdingBookmark;
   deleteBookmarkCallback: (bookmarkId: number) => void;
 }) {
+  const preferences = getPreferenceValues<Preferences>();
+  
   function showCopyToast() {
     showSuccessToast("Copied to Clipboard");
   }
@@ -130,10 +132,15 @@ function SearchListItem({
           : linkdingBookmark.website_title ?? linkdingBookmark.url
       }
       subtitle={
-        linkdingBookmark.description && linkdingBookmark.description.length > 0
-          ? linkdingBookmark.description
-          : linkdingBookmark.website_description
+        preferences.showSubtitle
+          ? (preferences.subtitleSource === "description"
+              ? (linkdingBookmark.description && linkdingBookmark.description.length > 0
+                  ? linkdingBookmark.description
+                  : linkdingBookmark.website_description)
+              : linkdingBookmark.notes)
+          : undefined
       }
+      icon={preferences.showFavicon ? {source:linkdingBookmark.favicon_url, mask: Image.Mask.Circle} : undefined}
       actions={
         <ActionPanel>
           <ActionPanel.Section>
