@@ -1,11 +1,12 @@
-import { Action, ActionPanel, Icon, Image, List, getPreferenceValues } from "@raycast/api";
+import { Action, ActionPanel, Icon, Image, List, getPreferenceValues, useNavigation } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import { LinkdingAccount, LinkdingAccountForm, LinkdingAccountMap, LinkdingBookmark, Preferences } from "./types/linkding-types";
 
 import { getPersistedLinkdingAccounts } from "./service/user-account-service";
-import { deleteBookmark, searchBookmarks } from "./service/bookmark-service";
+import { deleteBookmark, searchBookmarks, updateBookmark } from "./service/bookmark-service";
 import { showErrorToast, showSuccessToast } from "./util/bookmark-util";
 import { LinkdingShortcut } from "./types/linkding-shortcuts";
+import { EditBookmarkForm } from "./components/EditBookmarkForm";
 
 export default function searchLinkding() {
   const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingAccountForm | LinkdingAccount | null>(
@@ -94,6 +95,8 @@ export default function searchLinkding() {
               key={linkdingBookmark.id}
               linkdingBookmark={linkdingBookmark}
               deleteBookmarkCallback={deleteBookmarkCallback}
+              selectedLinkdingAccount={selectedLinkdingAccount}
+              onBookmarkUpdated={() => fetchBookmarks(searchText, selectedLinkdingAccount)}
             />
           ))}
         </List.Section>
@@ -114,14 +117,38 @@ export default function searchLinkding() {
 function SearchListItem({
   linkdingBookmark,
   deleteBookmarkCallback,
+  selectedLinkdingAccount,
+  onBookmarkUpdated,
 }: {
   linkdingBookmark: LinkdingBookmark;
   deleteBookmarkCallback: (bookmarkId: number) => void;
+  selectedLinkdingAccount: LinkdingAccount;
+  onBookmarkUpdated: () => void;
 }) {
   const preferences = getPreferenceValues<Preferences>();
+  const { push } = useNavigation();
   
   function showCopyToast() {
     showSuccessToast("Copied to Clipboard");
+  }
+
+  async function handleEditBookmark(title: string, notes: string, tagNames: string[]) {
+    if (selectedLinkdingAccount) {
+      await updateBookmark(selectedLinkdingAccount, linkdingBookmark.id, { 
+        title, 
+        notes, 
+        tag_names: tagNames 
+      });
+      onBookmarkUpdated();
+    }
+  }
+
+  function showEditForm() {
+    push(<EditBookmarkForm 
+      bookmark={linkdingBookmark} 
+      selectedAccount={selectedLinkdingAccount} 
+      onSubmit={handleEditBookmark} 
+    />);
   }
 
   return (
@@ -149,6 +176,12 @@ function SearchListItem({
               content={linkdingBookmark.url}
               onCopy={showCopyToast}
               shortcut={LinkdingShortcut.COPY_SHORTCUT}
+            />
+            <Action
+              title="Edit Bookmark"
+              icon={{ source: Icon.Pencil }}
+              shortcut={LinkdingShortcut.EDIT_SHORTCUT}
+              onAction={showEditForm}
             />
             <Action
               onAction={() => deleteBookmarkCallback(linkdingBookmark.id)}

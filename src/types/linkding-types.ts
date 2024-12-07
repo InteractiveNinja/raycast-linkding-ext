@@ -9,8 +9,11 @@ export interface LinkdingBookmark {
   url: string;
   title: string;
   description?: string;
+  notes?: string;
   website_title?: string;
   website_description?: string;
+  favicon_url?: string;
+  tag_names: string[];
 }
 
 export interface GetLinkdingBookmarkResponse {

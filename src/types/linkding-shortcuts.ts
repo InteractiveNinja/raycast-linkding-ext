@@ -94,7 +94,13 @@ const COPY_SHORTCUT: Keyboard.Shortcut = {
   key: Key.C,
 };
 
-export class LinkdingShortcut {
-  static COPY_SHORTCUT = COPY_SHORTCUT;
-  static DELETE_SHORTCUT = DELETE_SHORTCUT;
-}
+const EDIT_SHORTCUT: Keyboard.Shortcut = {
+  modifiers: [KeyModifier.CTRL],
+  key: Key.E,
+};
+
+export const LinkdingShortcut = {
+  DELETE_SHORTCUT,
+  COPY_SHORTCUT,
+  EDIT_SHORTCUT,
+} as const;

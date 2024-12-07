@@ -42,6 +42,18 @@ export function createBookmark(linkdingAccount: LinkdingAccount, bookmark: PostL
     .catch(showErrorToast);
 }
 
+export function updateBookmark(
+  linkdingAccount: LinkdingAccount,
+  bookmarkId: number,
+  data: { title: string; notes: string; tag_names: string[] }
+) {
+  return axios
+    .patch(`${linkdingAccount.serverUrl}/api/bookmarks/${bookmarkId}/`, data, {
+      ...createAxiosAgentConfig(linkdingAccount),
+    })
+    .catch(showErrorToast);
+}
+
 export function getWebsiteMetadata(url: string) {
   return axios
     .get(url)
@@ -51,5 +63,19 @@ export function getWebsiteMetadata(url: string) {
       const description = $("meta[name='description']").attr("content")?.trim();
       return { title, description };
     })
+    .catch(showErrorToast);
+}
+
+interface GetTagsResponse {
+  count: number;
+  results: Array<{ name: string; }>;
+}
+
+export function getTags(linkdingAccount: LinkdingAccount) {
+  return axios
+    .get<GetTagsResponse>(`${linkdingAccount.serverUrl}/api/tags/`, {
+      ...createAxiosAgentConfig(linkdingAccount),
+    })
+    .then(response => response.data.results.map(tag => tag.name))
     .catch(showErrorToast);
 }
