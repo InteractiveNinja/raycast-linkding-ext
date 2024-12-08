@@ -11,19 +11,19 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "search-bookmarks",
+      "name": "searchBookmarks",
       "title": "Search Linkding",
       "description": "Searches through Linkding Bookmarks",
       "mode": "view"
     },
     {
-      "name": "manage-account",
+      "name": "manageAccounts",
       "title": "Manage Linkding Accounts",
       "description": "Mange your Linkding Accounts and Servers",
       "mode": "view"
     },
     {
-      "name": "create-bookmarks",
+      "name": "createBookmark",
       "title": "Create Bookmark",
       "description": "Create new Bookmarks",
       "mode": "view"

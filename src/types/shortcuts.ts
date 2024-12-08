@@ -84,11 +84,6 @@ enum Key {
   BACKSPACE = "backspace",
 }
 
-const OPEN_SHORTCUT: Keyboard.Shortcut = {
-  modifiers: [KeyModifier.CMD],
-  key: Key.O,
-};
-
 const COPY_SHORTCUT: Keyboard.Shortcut = {
   modifiers: [KeyModifier.CMD],
   key: Key.C,
@@ -114,11 +109,16 @@ const EDIT_IN_LINKDING_SHORTCUT: Keyboard.Shortcut = {
   key: Key.E,
 };
 
+const CREATE_TAG_SHORTCUT: Keyboard.Shortcut = {
+  modifiers: [KeyModifier.CMD],
+  key: Key.T,
+};
+
 export const LinkdingShortcut = {
-  OPEN_SHORTCUT,
   COPY_SHORTCUT,
   EDIT_SHORTCUT,
   DELETE_SHORTCUT,
   VIEW_IN_LINKDING_SHORTCUT,
   EDIT_IN_LINKDING_SHORTCUT,
+  CREATE_TAG_SHORTCUT,
 } as const;

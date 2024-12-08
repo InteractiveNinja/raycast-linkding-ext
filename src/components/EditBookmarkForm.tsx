@@ -1,13 +1,14 @@
 import { Action, ActionPanel, Icon, Form, useNavigation } from "@raycast/api";
-import { useEffect, useState } from "react";
-import { LinkdingAccount, LinkdingBookmark } from "../types/linkding-types";
-import { getTags } from "../service/bookmark-service";
-import { showSuccessToast, showErrorToast } from "../util/bookmark-util";
+import { useState } from "react";
+import { LinkdingAccount, LinkdingBookmark } from "../types/index";
+import { showSuccessToast } from "../utils/index";
+import { useTags } from "../hooks/useTags";
 import { CreateTagForm } from "./CreateTagForm";
+import { LinkdingShortcut } from "../types/shortcuts";
 
 interface EditBookmarkFormProps {
   bookmark: LinkdingBookmark;
-  selectedAccount: LinkdingAccount;
+  selectedAccount: LinkdingAccount | null;
   onSubmit: (title: string, notes: string, tagNames: string[]) => Promise<void>;
 }
 
@@ -15,52 +16,12 @@ export function EditBookmarkForm({ bookmark, selectedAccount, onSubmit }: EditBo
   const { pop, push } = useNavigation();
   const [title, setTitle] = useState(bookmark.title);
   const [notes, setNotes] = useState(bookmark.notes || "");
-  const [selectedTags, setSelectedTags] = useState<string[]>(bookmark.tag_names);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
-
-  useEffect(() => {
-    loadTags();
-  }, [selectedAccount]);
-
-  async function loadTags() {
-    const tags = await getTags(selectedAccount);
-    if (tags) {
-      setAvailableTags(tags);
-    }
-  }
+  const { selectedTags, setSelectedTags, availableTags, handleCreateTag } = useTags(selectedAccount, bookmark.tag_names);
 
   async function handleSubmit() {
     await onSubmit(title, notes, selectedTags);
     showSuccessToast("Bookmark updated successfully");
     pop();
-  }
-
-  function handleCreateTag(tagName: string) {
-    const trimmedTagName = tagName.trim();
-    if (!trimmedTagName) return;
-
-    // 将空白字符替换为连字符
-    const normalizedTagName = trimmedTagName.replace(/\s+/g, '-');
-
-    // 检查标签是否已存在（不区分大小写）
-    const existingTag = availableTags.find(tag => tag.toLowerCase() === normalizedTagName.toLowerCase());
-    const isSelected = selectedTags.some(tag => tag.toLowerCase() === normalizedTagName.toLowerCase());
-
-    if (existingTag) {
-      if (isSelected) {
-        // 标签已存在且已被选中
-        showErrorToast(new Error(`Tag "${existingTag}" is already selected`));
-      } else {
-        // 标签已存在但未被选中，选中它
-        setSelectedTags(current => [...current, existingTag]);
-        showSuccessToast(`Tag "${existingTag}" has been selected`);
-      }
-    } else {
-      // 标签不存在，创建新标签
-      setSelectedTags(current => [...current, normalizedTagName]);
-      setAvailableTags(current => [...current, normalizedTagName]);
-      showSuccessToast(`Tag "${normalizedTagName}" will be created`);
-    }
   }
 
   return (
@@ -75,11 +36,10 @@ export function EditBookmarkForm({ bookmark, selectedAccount, onSubmit }: EditBo
           <Action
             title="Create New Tag"
             icon={{ source: Icon.Tag }}
-            shortcut={{ modifiers: ["ctrl"], key: "t" }}
+            shortcut={LinkdingShortcut.CREATE_TAG_SHORTCUT}
             onAction={() => {
               push(
                 <CreateTagForm
-                  selectedAccount={selectedAccount}
                   onTagCreated={handleCreateTag}
                 />
               );

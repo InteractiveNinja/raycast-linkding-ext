@@ -1,5 +1,5 @@
 import { LocalStorage } from "@raycast/api";
-import { LinkdingAccountMap } from "../types/linkding-types";
+import { LinkdingAccountMap } from "../types/index";
 
 const LINKDING_ACCOUNTS = "linkding_accounts";
 

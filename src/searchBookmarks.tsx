@@ -1,11 +1,11 @@
-import { Action, ActionPanel, Icon, Image, List, getPreferenceValues, useNavigation, open } from "@raycast/api";
+import { Action, ActionPanel, Icon, Image, List, getPreferenceValues, useNavigation, open, confirmAlert } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { LinkdingAccount, LinkdingAccountForm, LinkdingAccountMap, LinkdingBookmark, Preferences } from "./types/linkding-types";
+import { LinkdingAccount, LinkdingAccountForm, LinkdingAccountMap, LinkdingBookmark, Preferences } from "./types/index";
 
-import { getPersistedLinkdingAccounts } from "./service/user-account-service";
-import { deleteBookmark, searchBookmarks, updateBookmark } from "./service/bookmark-service";
-import { showErrorToast, showSuccessToast } from "./util/bookmark-util";
-import { LinkdingShortcut } from "./types/linkding-shortcuts";
+import { getPersistedLinkdingAccounts } from "./services/account";
+import { deleteBookmark, searchBookmarks, updateBookmark } from "./services/bookmark";
+import { showErrorToast, showSuccessToast } from "./utils/index";
+import { LinkdingShortcut } from "./types/shortcuts";
 import { EditBookmarkForm } from "./components/EditBookmarkForm";
 
 export default function searchLinkding() {
@@ -14,7 +14,7 @@ export default function searchLinkding() {
   );
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [isLoading, setLoading] = useState(true);
-  const [hasLinkdingAccounts, setHasLindingAccounts] = useState(false);
+  const [hasLinkdingAccounts, setHasLinkdingAccounts] = useState(false);
   const [linkdingBookmarks, setLinkdingBookmarks] = useState<LinkdingBookmark[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
   const [searchText, setSearchText] = useState("");
@@ -23,7 +23,7 @@ export default function searchLinkding() {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
         setLinkdingAccountMap(linkdingMap);
-        setHasLindingAccounts(Object.keys(linkdingMap).length > 0);
+        setHasLinkdingAccounts(Object.keys(linkdingMap).length > 0);
       }
     });
   }, [setLinkdingAccountMap]);
@@ -57,9 +57,18 @@ export default function searchLinkding() {
 
   function deleteBookmarkCallback(bookmarkId: number) {
     if (selectedLinkdingAccount) {
-      deleteBookmark(selectedLinkdingAccount, bookmarkId).then(() => {
-        showSuccessToast("Bookmark deleted");
-        fetchBookmarks(searchText, selectedLinkdingAccount);
+      confirmAlert({
+        title: "Confirm Delete",
+        message: "Are you sure you want to delete this bookmark?",
+        primaryAction: {
+          title: "Delete",
+          onAction: () => {
+            deleteBookmark(selectedLinkdingAccount, bookmarkId).then(() => {
+              showSuccessToast("Bookmark deleted");
+              fetchBookmarks(searchText, selectedLinkdingAccount);
+            });
+          },
+        },
       });
     }
   }
@@ -106,7 +115,7 @@ export default function searchLinkding() {
     return (
       <List>
         <List.EmptyView
-          title="You dont have a Linkding Account"
+          title="You don't have a Linkding Account"
           description="Please create a linking account before searching for bookmarks."
         />
       </List>
@@ -122,7 +131,7 @@ function SearchListItem({
 }: {
   linkdingBookmark: LinkdingBookmark;
   deleteBookmarkCallback: (bookmarkId: number) => void;
-  selectedLinkdingAccount: LinkdingAccount;
+  selectedLinkdingAccount: LinkdingAccount | null;
   onBookmarkUpdated: () => void;
 }) {
   const preferences = getPreferenceValues<Preferences>();
@@ -140,6 +149,8 @@ function SearchListItem({
         tag_names: tagNames 
       });
       onBookmarkUpdated();
+    } else {
+      showErrorToast(new Error("Please select a Linkding Account"));
     }
   }
 
@@ -152,13 +163,21 @@ function SearchListItem({
   }
 
   function handleOpenInLinkding() {
-    const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, '');
-    open(`${baseUrl}/bookmarks?details=${linkdingBookmark.id}`);
+    if (selectedLinkdingAccount) {
+      const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, '');
+      open(`${baseUrl}/bookmarks?details=${linkdingBookmark.id}`);
+    } else {
+      showErrorToast(new Error("Please select a Linkding Account"));
+    }
   }
 
   function handleEditInLinkding() {
-    const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, '');
-    open(`${baseUrl}/bookmarks/${linkdingBookmark.id}/edit`);
+    if (selectedLinkdingAccount) {
+      const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, '');
+      open(`${baseUrl}/bookmarks/${linkdingBookmark.id}/edit`);
+    } else {
+      showErrorToast(new Error("Please select a Linkding Account"));
+    }
   }
 
   return (
@@ -177,7 +196,7 @@ function SearchListItem({
               : linkdingBookmark.notes)
           : undefined
       }
-      icon={preferences.showFavicon ? {source:linkdingBookmark.favicon_url, mask: Image.Mask.Circle} : undefined}
+      icon={preferences.showFavicon && linkdingBookmark.favicon_url !== undefined ? { source: linkdingBookmark.favicon_url, mask: Image.Mask.Circle } : undefined}
       actions={
         <ActionPanel>
           <ActionPanel.Section>

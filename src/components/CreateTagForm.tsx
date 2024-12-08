@@ -1,13 +1,11 @@
 import { Action, ActionPanel, Form, useNavigation } from "@raycast/api";
 import { useState } from "react";
-import { LinkdingAccount } from "../types/linkding-types";
 
 interface CreateTagFormProps {
-  selectedAccount: LinkdingAccount;
   onTagCreated: (tagName: string) => void;
 }
 
-export function CreateTagForm({ selectedAccount, onTagCreated }: CreateTagFormProps) {
+export function CreateTagForm({ onTagCreated }: CreateTagFormProps) {
   const { pop } = useNavigation();
   const [tagName, setTagName] = useState("");
 

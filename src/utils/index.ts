@@ -1,14 +1,16 @@
-import { AxiosError, CanceledError } from "axios";
+import axios, { AxiosError, CanceledError, isAxiosError } from "axios";
 import { showToast, Toast } from "@raycast/api";
 
-export function showErrorToast(error: AxiosError) {
-  if (!isCancel(error)) {
-    showToast({
-      style: Toast.Style.Failure,
-      title: "Something went wrong",
-      ...(error && error.message ? { message: error.message } : {}),
-    });
+export function showErrorToast(error: Error | AxiosError) {
+  if (axios.isAxiosError(error) && isCancel(error)) {
+    return;
   }
+  
+  showToast({
+    style: Toast.Style.Failure,
+    title: "Something went wrong",
+    message: error.message,
+  });
 }
 
 export function showSuccessToast(message: string) {

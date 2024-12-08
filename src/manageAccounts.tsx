@@ -1,9 +1,9 @@
 import { Action, ActionPanel, Form, List, useNavigation } from "@raycast/api";
-import { LinkdingAccountForm, LinkdingAccountMap } from "./types/linkding-types";
+import { LinkdingAccountForm, LinkdingAccountMap } from "./types/index";
 import React, { useEffect, useState } from "react";
-import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./service/user-account-service";
-import { validateUrl } from "./util/bookmark-util";
-import { LinkdingShortcut } from "./types/linkding-shortcuts";
+import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./services/account";
+import { validateUrl } from "./utils/index";
+import { LinkdingShortcut } from "./types/shortcuts";
 
 export default function ManageAccounts() {
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
