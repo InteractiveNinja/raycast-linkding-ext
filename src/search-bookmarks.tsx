@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Icon, Image, List, getPreferenceValues, useNavigation } from "@raycast/api";
+import { Action, ActionPanel, Icon, Image, List, getPreferenceValues, useNavigation, open } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import { LinkdingAccount, LinkdingAccountForm, LinkdingAccountMap, LinkdingBookmark, Preferences } from "./types/linkding-types";
 
@@ -151,6 +151,16 @@ function SearchListItem({
     />);
   }
 
+  function handleOpenInLinkding() {
+    const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, '');
+    open(`${baseUrl}/bookmarks?details=${linkdingBookmark.id}`);
+  }
+
+  function handleEditInLinkding() {
+    const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, '');
+    open(`${baseUrl}/bookmarks/${linkdingBookmark.id}/edit`);
+  }
+
   return (
     <List.Item
       title={
@@ -188,6 +198,20 @@ function SearchListItem({
               icon={{ source: Icon.Trash }}
               title="Delete"
               shortcut={LinkdingShortcut.DELETE_SHORTCUT}
+            />
+          </ActionPanel.Section>
+          <ActionPanel.Section>
+            <Action
+              title="View in Linkding"
+              icon={Icon.Eye}
+              shortcut={LinkdingShortcut.VIEW_IN_LINKDING_SHORTCUT}
+              onAction={handleOpenInLinkding}
+            />
+            <Action
+              title="Edit in Linkding"
+              icon={Icon.Link}
+              shortcut={LinkdingShortcut.EDIT_IN_LINKDING_SHORTCUT}
+              onAction={handleEditInLinkding}
             />
           </ActionPanel.Section>
         </ActionPanel>
