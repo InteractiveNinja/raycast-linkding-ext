@@ -1,6 +1,6 @@
-import { Action, ActionPanel, Form, List, useNavigation } from "@raycast/api";
+import { Action, ActionPanel, Form, List, Icon, useNavigation, confirmAlert } from "@raycast/api";
 import { LinkdingAccountForm, LinkdingAccountMap } from "./types/index";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./services/account";
 import { validateUrl } from "./utils/index";
 import { LinkdingShortcut } from "./types/shortcuts";
@@ -23,8 +23,17 @@ export default function ManageAccounts() {
   }, [setLinkdingAccountMap, searchText]);
 
   function deleteAccount(name: string): void {
-    const { [name]: removed, ...filteredMapEntries } = linkdingAccountMap;
-    updateLinkdingAccountMap(filteredMapEntries);
+    confirmAlert({
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this account?",
+      primaryAction: {
+        title: "Delete",
+        onAction: () => {
+          const { [name]: removed, ...filteredMapEntries } = linkdingAccountMap;
+          updateLinkdingAccountMap(filteredMapEntries);
+        },
+      },
+    })
   }
 
   function createUpdateAccount(account: LinkdingAccountForm): void {
@@ -58,7 +67,7 @@ export default function ManageAccounts() {
       throttle
       actions={
         <ActionPanel title="Manage Accounts">
-          <Action title="Create New Account" onAction={() => showCreateEditAccount()} />
+          <Action title="Create New Account" icon={{ source: Icon.Plus }} onAction={() => showCreateEditAccount()} />
         </ActionPanel>
       }
     >
@@ -76,10 +85,11 @@ export default function ManageAccounts() {
               subtitle={linkdingAccount.serverUrl}
               actions={
                 <ActionPanel title="Manage Accounts">
-                  <Action title="Create Account" onAction={() => showCreateEditAccount()} />
-                  <Action title="Edit Account" onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
+                  <Action title="Create Account" icon={{ source: Icon.Plus }} onAction={() => showCreateEditAccount()} />
+                  <Action title="Edit Account" icon={{ source: Icon.Pencil }} onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
                   <Action
                     title="Delete Account"
+                    icon={{ source: Icon.Trash }}
                     shortcut={LinkdingShortcut.DELETE_SHORTCUT}
                     onAction={() => deleteAccount(name)}
                   />
