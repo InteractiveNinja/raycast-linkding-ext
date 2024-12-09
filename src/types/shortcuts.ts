@@ -95,7 +95,7 @@ const EDIT_SHORTCUT: Keyboard.Shortcut = {
 };
 
 const DELETE_SHORTCUT: Keyboard.Shortcut = {
-  modifiers: [KeyModifier.CMD],
+  modifiers: [KeyModifier.CMD, KeyModifier.SHIFT],
   key: Key.BACKSPACE,
 };
 
