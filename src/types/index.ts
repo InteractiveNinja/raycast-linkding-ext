@@ -1,7 +1,12 @@
 export interface Preferences {
   showSubtitle: boolean;
   showFavicon: boolean;
-  subtitleSource: "description" | "note";
+  subtitleSource: SubtitleSource;
+}
+
+export enum SubtitleSource {
+  DESCRIPTION = "description",
+  NOTE = "note",
 }
 
 export interface LinkdingBookmark {
