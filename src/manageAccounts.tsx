@@ -34,7 +34,7 @@ export default function ManageAccounts() {
           updateLinkdingAccountMap(filteredMapEntries);
         },
       },
-    })
+    });
   }
 
   function createUpdateAccount(account: LinkdingAccountForm): void {
@@ -86,8 +86,16 @@ export default function ManageAccounts() {
               subtitle={linkdingAccount.serverUrl}
               actions={
                 <ActionPanel title="Manage Accounts">
-                  <Action title="Create Account" icon={{ source: Icon.Plus }} onAction={() => showCreateEditAccount()} />
-                  <Action title="Edit Account" icon={{ source: Icon.Pencil }} onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
+                  <Action
+                    title="Create Account"
+                    icon={{ source: Icon.Plus }}
+                    onAction={() => showCreateEditAccount()}
+                  />
+                  <Action
+                    title="Edit Account"
+                    icon={{ source: Icon.Pencil }}
+                    onAction={() => showCreateEditAccount({ name, ...linkdingAccount })}
+                  />
                   <Action
                     title="Delete Account"
                     icon={{ source: Icon.Trash }}

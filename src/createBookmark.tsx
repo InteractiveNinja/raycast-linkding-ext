@@ -94,11 +94,7 @@ export default function CreateBookmarks() {
             icon={{ source: Icon.Tag }}
             shortcut={LinkdingShortcut.CREATE_TAG_SHORTCUT}
             onAction={() => {
-              push(
-                <CreateTagForm
-                  onTagCreated={handleCreateTag}
-                />
-              );
+              push(<CreateTagForm onTagCreated={handleCreateTag} />);
             }}
           />
         </ActionPanel>
@@ -120,13 +116,7 @@ export default function CreateBookmarks() {
       <Form.TextArea value={description} onChange={setDescription} id="description" title="Description" />
       <Form.TextArea value={notes} onChange={setNotes} id="notes" title="Notes" />
       <Form.Checkbox value={read} onChange={setRead} id="unread" label="Mark as Unread" />
-      <Form.TagPicker
-        id="tags"
-        title="Tags"
-        placeholder="Select tags"
-        value={selectedTags}
-        onChange={setSelectedTags}
-      >
+      <Form.TagPicker id="tags" title="Tags" placeholder="Select tags" value={selectedTags} onChange={setSelectedTags}>
         {availableTags.map((tag) => (
           <Form.TagPicker.Item key={tag} value={tag} title={tag} />
         ))}

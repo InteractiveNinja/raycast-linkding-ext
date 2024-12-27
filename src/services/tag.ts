@@ -5,7 +5,7 @@ import { showErrorToast } from "../utils/index";
 
 interface GetTagsResponse {
   count: number;
-  results: Array<{ name: string; }>;
+  results: Array<{ name: string }>;
 }
 
 export function getTags(linkdingAccount: LinkdingAccount) {
@@ -13,6 +13,6 @@ export function getTags(linkdingAccount: LinkdingAccount) {
     .get<GetTagsResponse>(`${linkdingAccount.serverUrl}/api/tags/`, {
       ...createAxiosAgentConfig(linkdingAccount),
     })
-    .then(response => response.data.results.map(tag => tag.name))
+    .then((response) => response.data.results.map((tag) => tag.name))
     .catch(showErrorToast);
 }

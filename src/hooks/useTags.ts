@@ -27,15 +27,11 @@ export function useTags(selectedAccount: LinkdingAccount | null, initialTags: st
     if (!trimmedTagName) return;
 
     // Replace whitespace with hyphens
-    const normalizedTagName = trimmedTagName.replace(/\s+/g, '-');
+    const normalizedTagName = trimmedTagName.replace(/\s+/g, "-");
 
     // Check if tag already exists (case-insensitive)
-    const existingTag = availableTags.find(
-      tag => tag.toLowerCase() === normalizedTagName.toLowerCase()
-    );
-    const isSelected = selectedTags.some(
-      tag => tag.toLowerCase() === normalizedTagName.toLowerCase()
-    );
+    const existingTag = availableTags.find((tag) => tag.toLowerCase() === normalizedTagName.toLowerCase());
+    const isSelected = selectedTags.some((tag) => tag.toLowerCase() === normalizedTagName.toLowerCase());
 
     if (existingTag) {
       if (isSelected) {
@@ -57,6 +53,6 @@ export function useTags(selectedAccount: LinkdingAccount | null, initialTags: st
     availableTags,
     setAvailableTags,
     handleCreateTag: createTag,
-    loadTags
+    loadTags,
   };
 }

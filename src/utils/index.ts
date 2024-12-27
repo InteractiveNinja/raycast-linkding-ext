@@ -5,7 +5,7 @@ export function showErrorToast(error: Error | AxiosError) {
   if (axios.isAxiosError(error) && isCancel(error)) {
     return;
   }
-  
+
   showToast({
     style: Toast.Style.Failure,
     title: "Something went wrong",

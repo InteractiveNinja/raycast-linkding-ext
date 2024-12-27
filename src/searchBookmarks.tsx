@@ -1,4 +1,14 @@
-import { Action, ActionPanel, Icon, Image, List, getPreferenceValues, useNavigation, open, confirmAlert } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Icon,
+  Image,
+  List,
+  getPreferenceValues,
+  useNavigation,
+  open,
+  confirmAlert,
+} from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import {
   LinkdingAccount,
@@ -6,7 +16,7 @@ import {
   LinkdingAccountMap,
   LinkdingBookmark,
   Preferences,
-  SubtitleSource
+  SubtitleSource,
 } from "./types";
 
 import { getPersistedLinkdingAccounts } from "./services/account";
@@ -144,17 +154,17 @@ function SearchListItem({
 }) {
   const preferences = getPreferenceValues<Preferences>();
   const { push } = useNavigation();
-  
+
   function showCopyToast() {
     showSuccessToast("Copied to Clipboard");
   }
 
   async function handleEditBookmark(title: string, notes: string, tagNames: string[]) {
     if (selectedLinkdingAccount) {
-      await updateBookmark(selectedLinkdingAccount, linkdingBookmark.id, { 
-        title, 
-        notes, 
-        tag_names: tagNames 
+      await updateBookmark(selectedLinkdingAccount, linkdingBookmark.id, {
+        title,
+        notes,
+        tag_names: tagNames,
       });
       onBookmarkUpdated();
     } else {
@@ -163,16 +173,18 @@ function SearchListItem({
   }
 
   function showEditForm() {
-    push(<EditBookmarkForm 
-      bookmark={linkdingBookmark} 
-      selectedAccount={selectedLinkdingAccount} 
-      onSubmit={handleEditBookmark} 
-    />);
+    push(
+      <EditBookmarkForm
+        bookmark={linkdingBookmark}
+        selectedAccount={selectedLinkdingAccount}
+        onSubmit={handleEditBookmark}
+      />
+    );
   }
 
   function handleOpenInLinkding() {
     if (selectedLinkdingAccount) {
-      const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, '');
+      const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, "");
       open(`${baseUrl}/bookmarks?details=${linkdingBookmark.id}`);
     } else {
       showErrorToast(new Error("Please select a Linkding Account"));
@@ -181,7 +193,7 @@ function SearchListItem({
 
   function handleEditInLinkding() {
     if (selectedLinkdingAccount) {
-      const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, '');
+      const baseUrl = selectedLinkdingAccount.serverUrl.replace(/\/$/, "");
       open(`${baseUrl}/bookmarks/${linkdingBookmark.id}/edit`);
     } else {
       showErrorToast(new Error("Please select a Linkding Account"));
