@@ -1,12 +1,20 @@
 import { Action, ActionPanel, Icon, Image, List, getPreferenceValues, useNavigation, open, confirmAlert } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { LinkdingAccount, LinkdingAccountForm, LinkdingAccountMap, LinkdingBookmark, Preferences } from "./types/index";
+import {
+  LinkdingAccount,
+  LinkdingAccountForm,
+  LinkdingAccountMap,
+  LinkdingBookmark,
+  Preferences,
+  SubtitleSource
+} from "./types";
 
 import { getPersistedLinkdingAccounts } from "./services/account";
 import { deleteBookmark, searchBookmarks, updateBookmark } from "./services/bookmark";
-import { showErrorToast, showSuccessToast } from "./utils/index";
+import { showErrorToast, showSuccessToast } from "./utils";
 import { LinkdingShortcut } from "./types/shortcuts";
 import { EditBookmarkForm } from "./components/EditBookmarkForm";
+import _ from "lodash";
 
 export default function searchLinkding() {
   const [selectedLinkdingAccount, setSelectedLinkdingAccount] = useState<LinkdingAccountForm | LinkdingAccount | null>(
@@ -23,7 +31,7 @@ export default function searchLinkding() {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
         setLinkdingAccountMap(linkdingMap);
-        setHasLinkdingAccounts(Object.keys(linkdingMap).length > 0);
+        setHasLinkdingAccounts(!_.isEmpty(linkdingMap));
       }
     });
   }, [setLinkdingAccountMap]);
@@ -180,23 +188,36 @@ function SearchListItem({
     }
   }
 
+  function getSubtitle() {
+    return preferences.showSubtitle && preferences.subtitleSource === SubtitleSource.DESCRIPTION
+      ? getDescription()
+      : getNotes();
+  }
+
+  function getDescription() {
+    return !_.isEmpty(linkdingBookmark.description) ? linkdingBookmark.description : undefined;
+  }
+
+  function getNotes() {
+    return !_.isEmpty(linkdingBookmark.notes) ? linkdingBookmark.notes : undefined;
+  }
+
   return (
     <List.Item
       title={
-        linkdingBookmark.title.length > 0
+        !_.isEmpty(linkdingBookmark.title)
           ? linkdingBookmark.title
           : linkdingBookmark.website_title ?? linkdingBookmark.url
       }
-      subtitle={
-        preferences.showSubtitle
-          ? (preferences.subtitleSource === "description"
-              ? (linkdingBookmark.description && linkdingBookmark.description.length > 0
-                  ? linkdingBookmark.description
-                  : linkdingBookmark.website_description)
-              : linkdingBookmark.notes)
+      subtitle={getSubtitle()}
+      icon={
+        preferences.showFavicon && !_.isNil(linkdingBookmark.favicon_url)
+          ? {
+              source: linkdingBookmark.favicon_url,
+              mask: Image.Mask.Circle,
+            }
           : undefined
       }
-      icon={preferences.showFavicon && linkdingBookmark.favicon_url !== undefined ? { source: linkdingBookmark.favicon_url, mask: Image.Mask.Circle } : undefined}
       actions={
         <ActionPanel>
           <ActionPanel.Section>

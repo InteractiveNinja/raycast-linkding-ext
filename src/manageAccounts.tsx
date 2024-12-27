@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./services/account";
 import { validateUrl } from "./utils/index";
 import { LinkdingShortcut } from "./types/shortcuts";
+import _ from "lodash";
 
 export default function ManageAccounts() {
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
@@ -13,7 +14,7 @@ export default function ManageAccounts() {
   useEffect(() => {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
-        setHasAccounts(Object.keys(linkdingMap).length > 0);
+        setHasAccounts(!_.isEmpty(linkdingMap));
         const searchedLinkdingAccounts = Object.keys(linkdingMap)
           .filter((account) => searchText === "" || account.includes(searchText))
           .reduce((prev, account) => ({ ...prev, [account]: linkdingMap[account] }), {});
