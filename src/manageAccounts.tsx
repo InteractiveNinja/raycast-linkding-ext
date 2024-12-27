@@ -30,6 +30,7 @@ export default function ManageAccounts() {
       primaryAction: {
         title: "Delete",
         onAction: () => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [name]: removed, ...filteredMapEntries } = linkdingAccountMap;
           updateLinkdingAccountMap(filteredMapEntries);
         },

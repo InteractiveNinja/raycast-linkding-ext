@@ -1,4 +1,4 @@
-import axios, { AxiosError, CanceledError, isAxiosError } from "axios";
+import axios, { AxiosError, CanceledError } from "axios";
 import { showToast, Toast } from "@raycast/api";
 
 export function showErrorToast(error: Error | AxiosError) {

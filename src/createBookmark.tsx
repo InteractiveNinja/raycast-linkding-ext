@@ -13,7 +13,7 @@ export default function CreateBookmarks() {
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedAccount, setSelectedAccount] = useState<string>("");
-  const [url, setUrl] = useState<string>("");
+  const [, setUrl] = useState<string>("");
   const [urlError, setUrlError] = useState<string | undefined>(undefined);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -69,7 +69,7 @@ export default function CreateBookmarks() {
       shared: false,
       is_archived: false,
       tag_names: selectedTags,
-    }).then((data) => {
+    }).then(() => {
       showSuccessToast("Bookmark created successfully");
       popToRoot();
     });
