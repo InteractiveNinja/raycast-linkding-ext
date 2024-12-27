@@ -1,10 +1,24 @@
+export interface Preferences {
+  showSubtitle: boolean;
+  showFavicon: boolean;
+  subtitleSource: SubtitleSource;
+}
+
+export enum SubtitleSource {
+  DESCRIPTION = "description",
+  NOTE = "note",
+}
+
 export interface LinkdingBookmark {
   id: number;
   url: string;
   title: string;
   description?: string;
+  notes?: string;
   website_title?: string;
   website_description?: string;
+  favicon_url?: string;
+  tag_names: string[];
 }
 
 export interface GetLinkdingBookmarkResponse {

@@ -1,9 +1,10 @@
-import { Action, ActionPanel, Form, List, useNavigation } from "@raycast/api";
-import { LinkdingAccountForm, LinkdingAccountMap } from "./types/linkding-types";
-import React, { useEffect, useState } from "react";
-import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./service/user-account-service";
-import { validateUrl } from "./util/bookmark-util";
-import { LinkdingShortcut } from "./types/linkding-shortcuts";
+import { Action, ActionPanel, Form, List, Icon, useNavigation, confirmAlert } from "@raycast/api";
+import { LinkdingAccountForm, LinkdingAccountMap } from "./types/index";
+import { useEffect, useState } from "react";
+import { getPersistedLinkdingAccounts, setPersistedLinkdingAccounts } from "./services/account";
+import { validateUrl } from "./utils/index";
+import { LinkdingShortcut } from "./types/shortcuts";
+import _ from "lodash";
 
 export default function ManageAccounts() {
   const [linkdingAccountMap, setLinkdingAccountMap] = useState<LinkdingAccountMap>({});
@@ -13,7 +14,7 @@ export default function ManageAccounts() {
   useEffect(() => {
     getPersistedLinkdingAccounts().then((linkdingMap) => {
       if (linkdingMap) {
-        setHasAccounts(Object.keys(linkdingMap).length > 0);
+        setHasAccounts(!_.isEmpty(linkdingMap));
         const searchedLinkdingAccounts = Object.keys(linkdingMap)
           .filter((account) => searchText === "" || account.includes(searchText))
           .reduce((prev, account) => ({ ...prev, [account]: linkdingMap[account] }), {});
@@ -23,8 +24,17 @@ export default function ManageAccounts() {
   }, [setLinkdingAccountMap, searchText]);
 
   function deleteAccount(name: string): void {
-    const { [name]: removed, ...filteredMapEntries } = linkdingAccountMap;
-    updateLinkdingAccountMap(filteredMapEntries);
+    confirmAlert({
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this account?",
+      primaryAction: {
+        title: "Delete",
+        onAction: () => {
+          const { [name]: removed, ...filteredMapEntries } = linkdingAccountMap;
+          updateLinkdingAccountMap(filteredMapEntries);
+        },
+      },
+    })
   }
 
   function createUpdateAccount(account: LinkdingAccountForm): void {
@@ -58,7 +68,7 @@ export default function ManageAccounts() {
       throttle
       actions={
         <ActionPanel title="Manage Accounts">
-          <Action title="Create New Account" onAction={() => showCreateEditAccount()} />
+          <Action title="Create New Account" icon={{ source: Icon.Plus }} onAction={() => showCreateEditAccount()} />
         </ActionPanel>
       }
     >
@@ -76,10 +86,11 @@ export default function ManageAccounts() {
               subtitle={linkdingAccount.serverUrl}
               actions={
                 <ActionPanel title="Manage Accounts">
-                  <Action title="Create Account" onAction={() => showCreateEditAccount()} />
-                  <Action title="Edit Account" onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
+                  <Action title="Create Account" icon={{ source: Icon.Plus }} onAction={() => showCreateEditAccount()} />
+                  <Action title="Edit Account" icon={{ source: Icon.Pencil }} onAction={() => showCreateEditAccount({ name, ...linkdingAccount })} />
                   <Action
                     title="Delete Account"
+                    icon={{ source: Icon.Trash }}
                     shortcut={LinkdingShortcut.DELETE_SHORTCUT}
                     onAction={() => deleteAccount(name)}
                   />

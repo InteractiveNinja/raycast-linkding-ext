@@ -11,31 +11,70 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "search-bookmarks",
+      "name": "searchBookmarks",
       "title": "Search Linkding",
       "description": "Searches through Linkding Bookmarks",
       "mode": "view"
     },
     {
-      "name": "manage-account",
+      "name": "manageAccounts",
       "title": "Manage Linkding Accounts",
       "description": "Mange your Linkding Accounts and Servers",
       "mode": "view"
     },
     {
-      "name": "create-bookmarks",
+      "name": "createBookmark",
       "title": "Create Bookmark",
       "description": "Create new Bookmarks",
       "mode": "view"
     }
   ],
+  "preferences": [
+    {
+      "title": "Bookmark list layout",
+      "name": "showFavicon",
+      "type": "checkbox",
+      "label": "Show favicon",
+      "description": "Display the favicon",
+      "default": true,
+      "required": false
+    },
+    {
+      "name": "showSubtitle",
+      "type": "checkbox",
+      "label": "Show subtitle",
+      "description": "Show the subtitle",
+      "default": true,
+      "required": false
+    },
+    {
+      "name": "subtitleSource",
+      "title": "Subtitle source",
+      "description": "Choose the subtitle source",
+      "type": "dropdown",
+      "required": false,
+      "data": [
+        {
+          "title": "Description",
+          "value": "description"
+        },
+        {
+          "title": "Note",
+          "value": "note"
+        }
+      ],
+      "default": "description"
+    }
+  ],
   "dependencies": {
     "@raycast/api": "^1.60.0",
     "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0-rc.12",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@raycast/eslint-config": "1.0.5",
+    "@types/lodash": "^4.17.13",
     "@types/node": "^18.8.4",
     "@types/react": "^18.2.27",
     "eslint": "^7.32.0",

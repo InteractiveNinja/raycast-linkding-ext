@@ -1,16 +1,8 @@
-import axios, { AxiosRequestConfig } from "axios";
-import { GetLinkdingBookmarkResponse, LinkdingAccount, PostLinkdingBookmarkPayload } from "../types/linkding-types";
-import { Agent } from "https";
-import { showErrorToast } from "../util/bookmark-util";
+import axios from "axios";
+import { createAxiosAgentConfig } from "./index";
+import { GetLinkdingBookmarkResponse, LinkdingAccount, PostLinkdingBookmarkPayload } from "../types/index";
+import { showErrorToast } from "../utils/index";
 import { load } from "cheerio";
-
-function createAxiosAgentConfig(linkdingAccount: LinkdingAccount): AxiosRequestConfig {
-  return {
-    responseType: "json",
-    httpsAgent: new Agent({ rejectUnauthorized: !linkdingAccount.ignoreSSL }),
-    headers: { Authorization: `Token ${linkdingAccount.apiKey}` },
-  };
-}
 
 export function searchBookmarks(
   linkdingAccount: LinkdingAccount,
@@ -37,6 +29,18 @@ export function deleteBookmark(linkdingAccount: LinkdingAccount, bookmarkId: num
 export function createBookmark(linkdingAccount: LinkdingAccount, bookmark: PostLinkdingBookmarkPayload) {
   return axios
     .post(`${linkdingAccount.serverUrl}/api/bookmarks/`, bookmark, {
+      ...createAxiosAgentConfig(linkdingAccount),
+    })
+    .catch(showErrorToast);
+}
+
+export function updateBookmark(
+  linkdingAccount: LinkdingAccount,
+  bookmarkId: number,
+  data: { title: string; notes: string; tag_names: string[] }
+) {
+  return axios
+    .patch(`${linkdingAccount.serverUrl}/api/bookmarks/${bookmarkId}/`, data, {
       ...createAxiosAgentConfig(linkdingAccount),
     })
     .catch(showErrorToast);
