@@ -1,5 +1,14 @@
 # Linkding Changelog
 
+## [Tags, customization and QOL] - 2024-12-27
+
+- Add new options to customize the bookmarks list layout. Users can choose whether to display the favicon, subtitle of each bookmark and whether the subtitle should display the description or notes. @xbot
+- Add an action to update bookmarks. @xbot
+- Add a tag picker and the tag creation action to the bookmark creation form. @xbot
+- Adds confirmation before deleting account @xbot
+- Refactoring
+- Dependency updates
+
 ## [Copy Shortcut & Creation and Deletion of Bookmarks] - 2023-11-04
 
 - Adds action and shortcut to copy bookmark to clipboard
